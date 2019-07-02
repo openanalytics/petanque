@@ -7,14 +7,14 @@ petanqueServer <- function(input, output, session) {
       updateTabsetPanel(session, "main-tabs", selected = "Rankings"))
   
   output$gameUI <- renderUI({
-        h1("Game on!")
-        
-        
-        fluidRow(
-            uiOutput("message"),
-            h2("Distributions"),
-            column(4, uiOutput("distributuionList")),
-            column(8, uiOutput("gameArea"))
+        tagList(
+            uiOutput("message"),        
+            if (gameActive() || gameEnded()) 
+              fluidRow(
+                  h2("Distributions"),
+                  column(4, uiOutput("distributuionList")),
+                  column(8, uiOutput("gameArea"))
+              )
         )
         
       })
@@ -51,13 +51,13 @@ petanqueServer <- function(input, output, session) {
         
         tagList(
             if (gameEnded()) {
-              span(
-                  paste0("Game finished with Player ", winner(), "(", players()[[winner()]], ") winning with ", score(), " points."),
-                  actionLink("gotoRankings", "See Rankings.") 
-              )
-            } else {
-              paste("Player", 3-activePlayer(), "chose", chosenDistr())
-            },
+                  span(
+                      paste0("Game finished with Player ", winner(), "(", players()[[winner()]], ") winning with ", score(), " points."),
+                      actionLink("gotoRankings", "See Rankings.") 
+                  )
+                } else {
+                  paste("Player", 3-activePlayer(), "chose", chosenDistr())
+                },
             plotOutput("pdf")
         )
       })
@@ -98,23 +98,13 @@ petanqueServer <- function(input, output, session) {
         length(distrChoices())
       })
   
-  # inputs
+# inputs
   observeEvent(input$enter, {
         if (!gameActive()) {
           ## just started the game
-          players(NULL)
-          gameEnded(FALSE)  
-          gameActive(TRUE)
-          # TODO: ask for player names
+          # ask for player names
           showModal(playerInfoModal())
-          # sample the target
-          targetLoc(sampleTarget())
-          # Set active player
-          activePlayer(1)
-          # Set turn
-          turnNumber(1)
-          # Sample distribution
-          distrChoices(sampleDistribution())
+          # further logic is called only after confirmation of names 
         } else {
           ## have chosen a distribution   
           # TODO: show a throw
@@ -175,15 +165,33 @@ petanqueServer <- function(input, output, session) {
           removeModal()
           
           playerNames <- c(input$player1, input$player2)
-          
           # save names in the DB
           oldPlayers <- getPlayers()
           if (!all(playerNames %in% oldPlayers))
             addPlayers(playerNames)
-          # use names for the game
-          players(playerNames)
+          
+          # start game
+          startNewGame(playerNames)
+          
         }
       })
+  
+  startNewGame <- function(playerNames) {
+    # start game
+    players(NULL)
+    gameEnded(FALSE)
+    gameActive(TRUE)
+    # use names for the game
+    players(playerNames)
+    # sample the target
+    targetLoc(sampleTarget())
+    # Set active player
+    activePlayer(1)
+    # Set turn
+    turnNumber(1)
+    # Sample distribution
+    distrChoices(sampleDistribution())
+  }
   
 }
 
@@ -194,7 +202,7 @@ playerInfoModal <- function(failed1 = FALSE, failed2 = FALSE, failedBoth = FALSE
       onInitialize = I('function() { this.setValue(""); }'))
   
   modalDialog(title = "Players", 
-
+      
       if (failedBoth)
         span("Please choose two different names", class = "warn"),
       
@@ -203,14 +211,17 @@ playerInfoModal <- function(failed1 = FALSE, failed2 = FALSE, failedBoth = FALSE
       
       selectizeInput("player1", "Player 1:", choices = allPlayers, 
           multiple = FALSE, options = selectizeOpts),
-
+      
       if (failed2)
         span("Invalid player 2 name", class = "warn"),
       
       selectizeInput("player2", "Player 2:", choices = allPlayers, 
           multiple = FALSE, options = selectizeOpts),
-
-      footer = actionButton("confirmPlayers", "Start!"), 
+      
+      footer = tagList(
+          modalButton("Cancel"),
+          actionButton("confirmPlayers", "Start!")
+      ), 
       size = "m", 
       easyClose = FALSE)
 }

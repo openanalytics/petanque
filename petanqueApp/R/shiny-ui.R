@@ -31,8 +31,10 @@ petanqueUI <- function(debug = FALSE) {
         actionLink(inputId = "debug_console", label = "Connect with console"),
       
       # keyboard inputs
+      # TODO: prevent enter presses when modal is shown
       tags$script('
               $(document).on("keydown", function (e) {
+   						if (!document.getElementById("shiny-modal")) {
               switch (e.which) {
               case 40: // down
                 Shiny.onInputChange("down", Math.random(1));
@@ -43,14 +45,14 @@ petanqueUI <- function(debug = FALSE) {
               case 13: // enter
                 Shiny.onInputChange("enter", Math.random(1));
                 break;
-              }});
+              }}});
               '), 
       
       includeCSS(system.file("resources", "custom.css", package = "petanqueApp")),      
       
       # title panel
       oaTitlePanel(appName = "Petanque Shiny App", pkgName = "petanqueApp",
-          logo = system.file("resources", "logo.png", package = "petanqueApp"),
+          logo = system.file("resources", "logo_text.png", package = "petanqueApp"),
           version = FALSE
       ),
       
