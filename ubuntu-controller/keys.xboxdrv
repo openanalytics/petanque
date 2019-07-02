@@ -1,0 +1,27 @@
+[xboxdrv]       # clear all mappings
+ui-clear=true
+
+[ui-buttonmap]  # colored buttons
+a = KEY_D
+x = KEY_S
+y = KEY_F
+
+[ui-buttonmap]  # D-pad
+dl = KEY_LEFT
+dr = KEY_RIGHT
+du = KEY_UP
+dd = KEY_DOWN
+
+[ui-buttonmap]  # start button
+start = KEY_ENTER
+
+#[ui-buttonmap] # other buttons
+#b = BTN_RIGHT
+#rb = KEY_PAGEDOWN
+#lb = KEY_PAGEUP
+#tl = KEY_BACKSPACE
+#tr = KEY_SPACE
+#lt = KEY_VOLUMEDOWN
+#rt = KEY_VOLUMEUP
+#back  = KEY_BACK
+#guide = KEY_ESC
