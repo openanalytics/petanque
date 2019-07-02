@@ -1,0 +1,51 @@
+.rhandsontable {
+	margin: 5px 0;
+}
+
+/* Use custom fonts */
+
+@import url('https://fonts.googleapis.com/css?family=Cantarell|Roboto');
+
+body {
+	font-family: 'Cantarell', sans-serif;
+}
+h1, h2, h3, h4 {
+	font-family: 'Roboto', sans-serif;
+	font-weight: bold;
+}
+
+/* formatting for the title panel */
+img.logo {
+	height: 50px; 
+	margin: 20px;
+}
+
+span.version {
+  float: right; 
+  font-family: Cantarell;
+  font-size: small; 
+  text-align: right; 
+  font-weight: normal; 
+  margin: 20px  
+}
+
+.warn {
+  color: red;	
+}
+
+/* Show a message when session is disconnected */
+div#shiny-disconnected-overlay {
+  opacity: 0.75;
+}
+div#shiny-disconnected-overlay:before {
+  content: "An error occured or your session has been disconnected. Please refresh your browser window.";
+  text-align: center;
+  font-size: 25pt;
+  background-color: white;
+  padding: 5%; 
+  width: 100%;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
