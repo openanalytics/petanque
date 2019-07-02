@@ -72,6 +72,10 @@ petanqueServer <- function(input, output, session) {
   
   output$pdf <- renderPlot({
         req(chosenDistr())
+        
+        ## TODO: here we need to show the actual game area + animation etc
+        
+        # placeholder histogram:
         n <- 1000
         dat <- switch(chosenDistr(),
             "normal(4, 3)" = rnorm(n, 4, 3), 
@@ -84,6 +88,7 @@ petanqueServer <- function(input, output, session) {
         hist(dat, xlim = c(0, 10), freq = FALSE)
         # target
         points(x = targetLoc(), y = 0, pch = 20, col = "red")
+        
       })
   
   gameActive <- reactiveVal(FALSE)
