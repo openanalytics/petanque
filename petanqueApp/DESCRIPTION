@@ -7,7 +7,7 @@ Authors@R:
            role = c("aut", "cre"),
            email = "maxim.nazarov@openanalytics.eu")
 Description: Petanque Game for useR!2019
-Imports: shiny
+Imports: shiny, DT
 License: GPL-3
 Encoding: UTF-8
 LazyData: true

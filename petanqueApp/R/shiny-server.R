@@ -1,3 +1,4 @@
+#' @importFrom DT datatable dataTableOutput renderDataTable
 petanqueServer <- function(input, output, session) {
   
   # debugging
@@ -21,6 +22,13 @@ petanqueServer <- function(input, output, session) {
   
   output$rankingsUI <- renderUI({
         h1("Rankings")
+        DT::dataTableOutput("rankingTable")
+      })
+  
+  output$rankingTable <- DT::renderDataTable({
+        # TODO
+        ranking <- getRanking()
+        DT::datatable(ranking, rownames = TRUE)
       })
   
   output$message <- renderUI({
@@ -129,7 +137,7 @@ petanqueServer <- function(input, output, session) {
             score(sample(1:3, 1))
             winner(sample(1:2, 1))
             # TODO: update and show ranking
-            #updateRanking()
+            updateRanking(players(), winner(), score())
             # TODO: prepare for new game
             gameActive(FALSE)
           } else {

@@ -31,21 +31,23 @@ petanqueUI <- function(debug = FALSE) {
         actionLink(inputId = "debug_console", label = "Connect with console"),
       
       # keyboard inputs
-      # TODO: prevent enter presses when modal is shown
+      # here we prevent key presses when modal is shown
       tags$script('
               $(document).on("keydown", function (e) {
-   						if (!document.getElementById("shiny-modal")) {
-              switch (e.which) {
-              case 40: // down
-                Shiny.onInputChange("down", Math.random(1));
-                break;
-              case 38: // up
-                Shiny.onInputChange("up", Math.random(1));
-                break;
-              case 13: // enter
-                Shiny.onInputChange("enter", Math.random(1));
-                break;
-              }}});
+   						  if (!document.getElementById("shiny-modal")) {
+                  switch (e.which) {
+                    case 40: // down
+                      Shiny.onInputChange("down", Math.random(1));
+                      break;
+                    case 38: // up
+                      Shiny.onInputChange("up", Math.random(1));
+                      break;
+                    case 13: // enter
+                      Shiny.onInputChange("enter", Math.random(1));
+                      break;
+                  }
+                }
+              });
               '), 
       
       includeCSS(system.file("resources", "custom.css", package = "petanqueApp")),      
