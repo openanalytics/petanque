@@ -1,0 +1,305 @@
+---
+title: "Petanque"
+subtitle: "List of distributions"
+author: "Vahid Nassiri (vahid.nassiri@openanalytics.eu)"
+output: oaStyle::html_report
+
+---
+
+# Target location
+
+For now, we need to define `maxTarget` as the maximum location the target could
+be placed, then the target location itself is generated from a Uniform
+distribtion as follws:
+
+```{r}
+maxTarget <- 10
+targetLocation <- runif(1, min = maxTarget/2, max = maxTarget)
+```
+
+# Distribution types
+
+I have considered both continuous and discrete distributions, but except for
+normal distribution they are all taking positive values. In most of the cases,
+I let the parameters of the distribution depend on `maxTarget`. Also, the
+parameters themselves are generated from suitabel distributions. 
+
+In the following sections I will review the distributions, give their density,
+expectation and variance (these can be used to make the cheat sheet), also they
+way the parameters are defined. A plot is also given showing the density of
+generated target location and the numbers generated from each distribution
+(based on 1 million replications).
+
+There are some remarks:
+
+Weibull and log-normal have long tails, so it is
+possible that we get very large numbers from them. With other distributions
+also, obtaining large numebrs is still possible (though not much likely). I
+think that is still interesting, and we can forsee some expression like "You
+landed the ball on the moon" or Mars, or Uranus, depending on how large the
+number is, and then such balls can be considered out of game! But if you find
+it not that cool, we can change distributions.
+
+For now, we would not allow throw a ball backward, so no negativer values are
+allowed, the only distributuion here with a possible negative value is normal,
+and that is why there I've used a very small variance, but also a mean which
+is not that close to the target. So if the user wants to use normal, it comes
+with the possibility of landing the ball a bit far from the target.
+
+We also have two irrelevant distributions: Bernouli and beta. Both of them
+generate random numbers between zero and one, but as Jason suggested, that
+could be cool as well.
+
+I've also include degenerate distribtion. That means our random variable takes
+only one value with probability one. In fact, no randomness here. That single
+value itself is generated from a uniform distribution and it will usually be
+far from the target. I think that would face the user with the question of
+whether take this exact value which is a bit far from the target, or try a
+random number which could possibly closer or not. 
+
+## Binomial
+
+Density: $\binom{N}{k} p ^ k (1-p)^{N-k}$
+
+Expection: $Np$
+
+Variance: $np(1-p)$
+
+```{r, eval = FALSE}
+rbinom(1, round(maxTarget * runif(1, 0.5, 1.2))+ 1, rbeta(1, 1.5, 0.6))
+```
+
+```{r, echo = FALSE}
+selCol <- 2
+xLim <- c(min(c(density(allRes[,1])$x,density(allRes[,selCol])$x)), 
+		max(c(density(allRes[,1])$x,density(allRes[,selCol])$x)))
+yLim <- c(min(c(density(allRes[,1])$y,density(allRes[,selCol])$y)), 
+		max(c(density(allRes[,1])$y,density(allRes[,selCol])$y)))
+
+plot(density(allRes[,1]), xlim = xLim, ylim = yLim, main = "Binomial")
+lines(density(allRes[,selCol]), col = 2, lty = 2)
+legend("topright", c("target", "distribution"), lty = 1:2, col = 1:2)
+```
+
+## Poisson
+
+Density: $\frac{\lambda ^k e^{-\lambda}}{k!}$
+
+Expectation: $\lambda$
+
+Variance: $\lambda$
+
+```{r, eval = FALSE}
+rpois(1, maxTarget * rbeta(1,1.5,0.6))
+```
+
+```{r, echo = FALSE}
+selCol <- 3
+xLim <- c(min(c(density(allRes[,1])$x,density(allRes[,selCol])$x)), 
+		max(c(density(allRes[,1])$x,density(allRes[,selCol])$x)))
+yLim <- c(min(c(density(allRes[,1])$y,density(allRes[,selCol])$y)), 
+		max(c(density(allRes[,1])$y,density(allRes[,selCol])$y)))
+
+plot(density(allRes[,1]), xlim = xLim, ylim = yLim, main = "Poisson")
+lines(density(allRes[,selCol]), col = 2, lty = 2)
+legend("topright", c("target", "distribution"), lty = 1:2, col = 1:2)
+```
+
+## continuous Uniform
+
+Density: $\frac{1}{b-a}$
+
+Expectation: $\frac{a+b}{2}$
+
+Variance: $\frac{(b-a)^2}{12}$
+
+```{r, eval = FALSE}
+minUnif <- runif(1, 0, maxTarget/2)
+maxUnif <- runif(1, minUnif, minUnif + rpois(1, maxTarget * runif(1, 0.55, 2.5)))
+runif(1, minUnif, maxUnif)
+```
+
+```{r, echo = FALSE}
+selCol <- 4
+xLim <- c(min(c(density(allRes[,1])$x,density(allRes[,selCol])$x)), 
+		max(c(density(allRes[,1])$x,density(allRes[,selCol])$x)))
+yLim <- c(min(c(density(allRes[,1])$y,density(allRes[,selCol])$y)), 
+		max(c(density(allRes[,1])$y,density(allRes[,selCol])$y)))
+
+plot(density(allRes[,1]), xlim = xLim, ylim = yLim, main = "continuous Uniform")
+lines(density(allRes[,selCol]), col = 2, lty = 2)
+legend("topright", c("target", "distribution"), lty = 1:2, col = 1:2)
+```
+
+## Weibull
+
+Density: $\frac{k}{\lambda}(x/\lambda)^{k-1} \exp\{-(x/\lambda)^k\}, \; x\geq 0$
+
+Expectation: $\lambda \Gamma(1+1/k)$
+
+Variance: $\lambda^2 \left[\Gamma\left(1 + \frac{2}{k} \right) - \left(\Gamma\left(1+\frac{1}{k} \right) \right)^2 \right]$
+
+```{r, eval = FALSE}
+rweibull(1, 0.8, runif(1, maxTarget/2 , maxTarget*2))
+```
+
+```{r, echo = FALSE}
+selCol <- 5
+xLim <- c(min(c(density(allRes[,1])$x,density(allRes[,selCol])$x)), 
+		max(c(density(allRes[,1])$x,density(allRes[,selCol])$x)))
+yLim <- c(min(c(density(allRes[,1])$y,density(allRes[,selCol])$y)), 
+		max(c(density(allRes[,1])$y,density(allRes[,selCol])$y)))
+
+plot(density(allRes[,1]), xlim = xLim, ylim = yLim, main = "Weibull")
+lines(density(allRes[,selCol]), col = 2, lty = 2)
+legend("topright", c("target", "distribution"), lty = 1:2, col = 1:2)
+```
+
+## Log-normal
+
+
+Density: $\frac{1}{x \sigma \sqrt{2\pi}} \exp\left(- \frac{(\ln x - \mu)^2}{2\sigma^2} \right)$
+
+Expectation: $\exp\left(\mu + \frac{\sigma^2}{2} \right)$
+
+Variance: $\left[\exp(\sigma^2) - 1 \right] \exp(2\mu + \sigma^2)$
+
+```{r, eval = FALSE}
+rlnorm(1, runif(1,log(maxTarget*0.3), log(maxTarget*1.1)), runif(1, 0, 1))
+```
+
+```{r, echo = FALSE}
+selCol <- 6
+xLim <- c(min(c(density(allRes[,1])$x,density(allRes[,selCol])$x)), 
+		max(c(density(allRes[,1])$x,density(allRes[,selCol])$x)))
+yLim <- c(min(c(density(allRes[,1])$y,density(allRes[,selCol])$y)), 
+		max(c(density(allRes[,1])$y,density(allRes[,selCol])$y)))
+
+plot(density(allRes[,1]), xlim = xLim, ylim = yLim, main = "Log-normal")
+lines(density(allRes[,selCol]), col = 2, lty = 2)
+legend("topright", c("target", "distribution"), lty = 1:2, col = 1:2)
+```
+
+
+## Chi-squared
+
+Density: $\frac{1}{2^{k/2} \Gamma(k/2}) x^{k/2-1}e^{-x/2}$
+
+Expectation: $k$
+
+Variance: $2k$
+
+```{r, eval = FALSE}
+rchisq(1, maxTarget * rbeta(1,1.5,0.6))
+```
+
+```{r, echo = FALSE}
+selCol <- 7
+xLim <- c(min(c(density(allRes[,1])$x,density(allRes[,selCol])$x)), 
+		max(c(density(allRes[,1])$x,density(allRes[,selCol])$x)))
+yLim <- c(min(c(density(allRes[,1])$y,density(allRes[,selCol])$y)), 
+		max(c(density(allRes[,1])$y,density(allRes[,selCol])$y)))
+
+plot(density(allRes[,1]), xlim = xLim, ylim = yLim, main = "Chi-squared")
+lines(density(allRes[,selCol]), col = 2, lty = 2)
+legend("topright", c("target", "distribution"), lty = 1:2, col = 1:2)
+```
+
+## Normal
+
+Density: $\frac{1}{\sqrt{2\pi\sigma^2}} e^{-\frac{(x-\mu)^2}{2\sigma^2}}$
+
+Expectation: $\mu$
+
+Variance: $\sigma^2$
+
+```{r, eval = FALSE}
+rnorm(1, maxTarget * runif(1, 0.4, 0.6), runif(1, 0.6, 0.9))
+```
+
+```{r, echo = FALSE}
+selCol <- 8
+xLim <- c(min(c(density(allRes[,1])$x,density(allRes[,selCol])$x)), 
+		max(c(density(allRes[,1])$x,density(allRes[,selCol])$x)))
+yLim <- c(min(c(density(allRes[,1])$y,density(allRes[,selCol])$y)), 
+		max(c(density(allRes[,1])$y,density(allRes[,selCol])$y)))
+
+plot(density(allRes[,1]), xlim = xLim, ylim = yLim, main = "Normal")
+lines(density(allRes[,selCol]), col = 2, lty = 2)
+legend("topright", c("target", "distribution"), lty = 1:2, col = 1:2)
+```
+
+## Bernoulli
+
+
+Density: $Pr(X=1) = 0,\; Pr(X=0) = 1-p$
+
+Expectation: $p$
+
+Variance: $p(1-p)$
+
+```{r, eval = FALSE}
+rbinom(1, 1, runif(1, 0.01, 0.99))
+```
+
+```{r, echo = FALSE}
+selCol <- 9
+xLim <- c(min(c(density(allRes[,1])$x,density(allRes[,selCol])$x)), 
+		max(c(density(allRes[,1])$x,density(allRes[,selCol])$x)))
+yLim <- c(min(c(density(allRes[,1])$y,density(allRes[,selCol])$y)), 
+		max(c(density(allRes[,1])$y,density(allRes[,selCol])$y)))
+
+plot(density(allRes[,1]), xlim = xLim, ylim = yLim, main = "Bernoulli")
+lines(density(allRes[,selCol]), col = 2, lty = 2)
+legend("topright", c("target", "distribution"), lty = 1:2, col = 1:2)
+```
+
+## Beta
+
+Density: $\frac{x^{\alpha-1} (1-x)^{\beta - 1}}{B(\alpha, \beta),\; B(\alpha, \beta) = \frac{\Gamma(\alpha)\Gamma(\beta)}{\Gamma(\alpha + \beta)}}$
+
+Expectation: $\frac{\alpha}{\alpha + \beta}$
+
+Variance: $\frac{\alpha \beta}{(\alpha + \beta)^2 (\alpha + \beta + 1)}$
+
+```{r, eval = FALSE}
+rbeta(1, runif(1,1, 10), runif(1, 1, 10))
+```
+
+```{r, echo = FALSE}
+selCol <- 10
+xLim <- c(min(c(density(allRes[,1])$x,density(allRes[,selCol])$x)), 
+		max(c(density(allRes[,1])$x,density(allRes[,selCol])$x)))
+yLim <- c(min(c(density(allRes[,1])$y,density(allRes[,selCol])$y)), 
+		max(c(density(allRes[,1])$y,density(allRes[,selCol])$y)))
+
+plot(density(allRes[,1]), xlim = xLim, ylim = yLim, main = "Beta")
+lines(density(allRes[,selCol]), col = 2, lty = 2)
+legend("topright", c("target", "distribution"), lty = 1:2, col = 1:2)
+```
+
+## Degenrate
+
+
+Density: $Pr(X=k_0) = 1$
+
+Expectation: $k_0$
+
+Variance: $0$
+
+```{r, eval = FALSE}
+## This is only used to generate k0 above
+runif(1, min = maxTarget*0.05, max = maxTarget*1.1)
+```
+
+```{r, echo = FALSE}
+selCol <- 11
+xLim <- c(min(c(density(allRes[,1])$x,density(allRes[,selCol])$x)), 
+		max(c(density(allRes[,1])$x,density(allRes[,selCol])$x)))
+yLim <- c(min(c(density(allRes[,1])$y,density(allRes[,selCol])$y)), 
+		max(c(density(allRes[,1])$y,density(allRes[,selCol])$y)))
+
+plot(density(allRes[,1]), xlim = xLim, ylim = yLim, main = "Degenrate")
+lines(density(allRes[,selCol]), col = 2, lty = 2)
+legend("topleft", c("target", "distribution"), lty = 1:2, col = 1:2)
+```
