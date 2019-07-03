@@ -1,6 +1,7 @@
 library(oaPlots)
 library(RColorBrewer)
 library(dplyr)
+library(plotrix)
 source("determineOutcome.R")
 source("drawFunctions.R")
 source("plotDistribution.R")
