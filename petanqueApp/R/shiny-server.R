@@ -217,6 +217,7 @@ petanqueServer <- function(input, output, session) {
     gameActive(TRUE)
     gameData(NULL)
     
+    # draw initial game area
     svgStr <- svgDevice()
     posDF <- newGame()
     dev.off()
