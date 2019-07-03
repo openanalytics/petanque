@@ -3,9 +3,48 @@
 
 petanqueServer <- function(input, output, session) {
   
-  # debugging
+  ## debugging
   observeEvent(input$debug_console, browser())
   
+  ## config and initialization 
+  MAX_TURNS <- 6
+  STEP_MAX <- 8  # animation steps
+  DELAY <- 500  # animation step delay in ms 
+  
+  gameActive <- reactiveVal(FALSE)
+  gameEnded <- reactiveVal(FALSE)
+  gameData <- reactiveVal(NULL)  		## data frame with all game data
+  gamePlot <- reactiveVal(NULL)  		## svg string with plot
+  
+  players <- reactiveVal(NULL)      ## vector of names
+  activePlayer <- reactiveVal(NULL) ## index of active player (1 or 2)
+  turnNumber <- reactiveVal(NULL)
+  
+  step <- reactiveVal(STEP_MAX)			## animation step (initialized as 'finished')
+
+  distance <- reactiveVal(NULL)
+  
+  distrChoices <- reactiveVal(NULL)	## list of lists
+  activeDistr <- reactiveVal(1)			
+  chosenDistr <- reactiveVal(NULL)	
+
+  ## helper reactives
+  nDistr <- reactive({
+        req(distrChoices())
+        length(distrChoices())
+      })
+  # we always know the current score
+  score <- reactive({
+        req(gameData())
+        determineOutcome(gameData())$pointsWon
+      })
+  # and the winning player
+  winner <- reactive({
+        req(gameData())
+        winnerNumber(determineOutcome(gameData())$winner)
+      })
+  
+  ## ui elements
   observeEvent(input$gotoRankings, 
       updateTabsetPanel(session, "main-tabs", selected = "Rankings"))
   
@@ -91,13 +130,14 @@ petanqueServer <- function(input, output, session) {
       })
 
   ### plot drawing:
-  ## our reactive object is `svglite::svgstring` device
+  ## our reactive object is `svglite::svgstring` function
   ## it gets changed after start or after a distribution is chosen (turn)
+  output$game <- renderUI({ HTML(gamePlot()) })
   
-  ## update game field on each turn
+  ## after distribution is chosen, sample from it and start animation
   observeEvent(chosenDistr(), {
         picked <- chosenDistr()
-        # sample distance
+        # sample distance from distribution
         distance(
             distanceFromDistribution(
                 distribution = picked[["type"]],
@@ -109,7 +149,7 @@ petanqueServer <- function(input, output, session) {
         step(1)
       })
 
-  # animation
+  ## animation
   observe({
         invalidateLater(DELAY, session)
         isolate({
@@ -132,43 +172,8 @@ petanqueServer <- function(input, output, session) {
               step(curStep + 1)
             })
       })
-  
-  output$game <- renderUI({ HTML(gamePlot()) })
-  
-  gameActive <- reactiveVal(FALSE)
-  gameEnded <- reactiveVal(FALSE)
-  gameData <- reactiveVal(NULL)  ## data frame with all game data
-  gamePlot <- reactiveVal(NULL)
-  
-  players <- reactiveVal(NULL)  ## vector of names
-  activePlayer <- reactiveVal(NULL)  ## index of active player (1 or 2)
-  turnNumber <- reactiveVal(NULL)
-  MAX_TURNS <- 6
-  STEP_MAX <- 8  # animation steps
-  DELAY <- 500  # animation step delay in ms 
 
-  step <- reactiveVal(STEP_MAX)
-  distance <- reactiveVal(NULL)
-    
-  distrChoices <- reactiveVal(NULL)
-  activeDistr <- reactiveVal(1)
-  chosenDistr <- reactiveVal(NULL)
-  
-  nDistr <- reactive({
-        req(distrChoices())
-        length(distrChoices())
-      })
-  
-  score <- reactive({
-        req(gameData())
-        determineOutcome(gameData())$pointsWon
-      })
-  winner <- reactive({
-        req(gameData())
-        winnerNumber(determineOutcome(gameData())$winner)
-      })
-  
-# inputs
+  ## keyboard inputs ('enter' can be also clicked) 
   observeEvent(input$enter, {
         if (!gameActive()) {
           ## just started the game
@@ -239,15 +244,16 @@ petanqueServer <- function(input, output, session) {
         }
       })
   
+  ## this function is inside server as we modify many reactives
   startNewGame <- function(playerNames) {
     # start game
+    gameActive(TRUE)
+    gameEnded(FALSE)
+    gameData(NULL)
     players(NULL)
     activePlayer(NULL)
     turnNumber(NULL)
     chosenDistr(NULL)
-    gameEnded(FALSE)
-    gameActive(TRUE)
-    gameData(NULL)
     
     # draw initial game area
     svgStr <- svgDevice()
@@ -256,13 +262,13 @@ petanqueServer <- function(input, output, session) {
     gamePlot(svgStr())
     gameData(posDF)
     
-    # use names for the game
+    # use names in the game
     players(playerNames)
     # Set active player
     activePlayer(1)
     # Set turn
     turnNumber(1)
-    # Sample distribution
+    # Sample distribution choices
     distrChoices(generateOptions())
   }
   
