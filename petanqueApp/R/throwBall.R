@@ -1,0 +1,69 @@
+#library(oaPlots)
+#library(RColorBrewer)
+#library(dplyr)
+#library(plotrix)
+#source("determineOutcome.R")
+#source("drawFunctions.R")
+#source("plotDistribution.R")
+#source("generateOptions.R")
+#source("newGame.R")
+#source("messages.R")
+#
+#
+#posDF <- newGame()
+
+throwBall <- function(distribution = "normal", param1 = 5, 
+		param2 = 1, posDF = posDF){
+	
+	refreshPlot(posDF)
+	i <- min(which(!posDF$thrown))
+	
+	# TODO add distributions
+	if(distribution == "normal")
+		distance <- rnorm(1, mean = param1, sd = param2)
+	if(distribution == "uniform")
+		distance <- runif(1, param1, param2)
+	if(distribution == "poisson")
+		distance <- rpois(1, lambda = param1)
+	if(distribution == "bernoulli")
+		distance <- rbinom(1, 1, prob = param1)
+	if(distribution == "binomial")
+		distance <- rbinom(1, size = param1, prob = param2)
+	if(distribution == "geometric")
+		distance <- rgeom(1, prob = param1)
+	if(distribution == "degenerate")
+		distance <- param1
+	if(distribution == "chisq")
+		distance <- rchisq(1, df = param1)
+	if(distribution == "weibull")
+		distance <- rweibull(1, shape = param1, scale = param2)
+	
+	drawDistribution(distribution = distribution, param1 = param1, param2 = param2)
+	animateThrow(distance, color = oaColors(posDF$color[i]))
+	segments(x0 = distance, y0 = 1.1, y1 = 0, col = oaColors(posDF$color[i]), lwd = 4)
+	
+	posDF$y[i] <- ifelse(distance > 10 | distance < 0, -0.3, 0.09)
+	points(x = distance, y = posDF$y[i], col = oaColors(posDF$color[i]),
+			cex = 3, pch = 19)
+	
+	if(distance < 0) {
+		msg <- generateNegativeMessage()
+		text(msg, x = 5, y = -0.4, font = 2, col = oaColors(posDF$color[i]))
+	}
+	
+	if(distance > 10) {
+		msg <- generatePositiveMessage(distance)
+		text(msg, x = 5, y = -0.4, font = 2, col = oaColors(posDF$color[i]))
+	}
+		
+
+	posDF$thrown[i] <- TRUE
+	posDF$x[i] <- distance
+	
+	# TODO posDF <- detectColission()
+	if(i < 7) {
+		drawHuman(color = posDF$color[i+1]); Sys.sleep(1)
+	}
+		
+	return(posDF)
+}
