@@ -41,7 +41,7 @@ petanqueServer <- function(input, output, session) {
         
         if (gameEnded()) {
           msg <- paste0("Game finished! ", players()[[winner()]], " has won with ", score(), " points.")
-          msg <- tagList(msg, actionLink("gotoRankings", "See Rankings."), "Press \"Start\" to start a new game!") 
+          msg <- tagList(msg, actionLink("gotoRankings", "See Rankings."), br(), "Press \"Start\" to start a new game!") 
         } else {
           if (!gameActive()) {
             msg <- "Press \"Start\" to start a new game!" 
@@ -208,7 +208,7 @@ petanqueServer <- function(input, output, session) {
     gameActive(TRUE)
     gameData(NULL)
     
-    gamePlot <- svglite::svgstring(standalone = FALSE, height = 400/72, width = 800/72)
+    gamePlot <- svglite::svgstring(standalone = FALSE, height = 400/96, width = 800/96)
     posDF <- newGame()
     dev.off()
     output[["game"]] <- renderUI({ HTML(gamePlot()) })

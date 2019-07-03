@@ -1,3 +1,7 @@
+#' @import oaPlots
+#' @import oaColors
+#' @import RColorBrewer
+#' @import plotrix
 newGame <- function() {
 	drawField()
 	drawHuman("orange")
