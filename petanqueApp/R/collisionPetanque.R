@@ -35,7 +35,7 @@ collisionPetanque <- function(data, throwBallID, throwBallV, a = 10){
 		# Elastic collision: conservation of kinetic energy
 		# assume that the energy is equally spread between the hit balls
 		# and that the thrown ball stops (the hit ball has no initial speed)
-		hitBallKE <- throwBallKE/length(ballHit)
+		hitBallKE <- throwBallKE/sum(data$hit)  #length(ballHit)
 		
 		# get speed of each hit ball
 		data$v <- with(data, ifelse(hit, getVFromKE(KE = hitBallKE, m = m), NA))
@@ -49,7 +49,7 @@ collisionPetanque <- function(data, throwBallID, throwBallV, a = 10){
 		hitBallIDs <- subset(data, hit)$ID
 		res <- lapply(hitBallIDs, function(hitBallID){
 			collisionPetanque(
-				data = data, throwBallID = ID, 
+				data = data, throwBallID = hitBallID, 
 				throwBallV = subset(data, ID == hitBallID)$v
 			)
 		})
@@ -83,7 +83,7 @@ getDistanceFromSpeed <- function(v0, a = 10){
 #' @return Speed in m/s
 #' @author Laure Cougnaud
 #' @export
-getSpeedFromDistance <- function(d, theta = 45){
+getSpeedFromDistance <- function(d, theta = pi/4){
 	g <- 9.81 # gravitation constant (m/s^2)
 	v0 <- sqrt((g*d)/sin(2*theta))
 	return(v0)

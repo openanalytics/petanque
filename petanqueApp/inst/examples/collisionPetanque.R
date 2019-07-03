@@ -12,7 +12,7 @@ radiusTarget <- 0.030 # 30 diameter +- 1mm
 
 # position of thrown ball
 x <- 7.9
-v <- getSpeedFromDistance(d = x, theta = 45)
+v <- getSpeedFromDistance(d = x, theta = pi/4)
 
 dataPetanque <- data.frame(
 		ID = c(1:4),
