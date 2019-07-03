@@ -107,10 +107,10 @@ playerInfoModal <- function(failed1 = FALSE, failed2 = FALSE, failedBoth = FALSE
           multiple = FALSE, options = selectizeOpts),
       
       footer = tagList(
-          modalButton("Cancel"),
+#          modalButton("Cancel"),
           actionButton("confirmPlayers", "Start!")
       ), 
       size = "m", 
-      easyClose = FALSE)
+      easyClose = TRUE)
 }
 
