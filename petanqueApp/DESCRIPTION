@@ -11,7 +11,9 @@ Authors@R: c(
     person("Vahid", "Nassiri", role = c("aut"),
            email = "vahid.nassiri@openanalytics.eu"),
     person("Marijke", "Van Moerbeke", role = c("aut"),
-           email = "marijke.vanmoerbeke@openanalytics.eu")     
+           email = "marijke.vanmoerbeke@openanalytics.eu"),
+    person("Machteld", "Varewyck", role = c("aut"),
+           email = "machteld.varewyck@openanalytics.eu")     
     )
 Description: Petanque Game for useR!2019
 Imports: shiny, DT, oaPlots, plotrix, RColorBrewer, oaColors

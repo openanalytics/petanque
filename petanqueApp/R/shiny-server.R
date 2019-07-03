@@ -40,7 +40,7 @@ petanqueServer <- function(input, output, session) {
   output$message <- renderUI({
         
         if (gameEnded() && step() == STEP_MAX) {
-          msg <- tagList("Game finished! ", 
+          msg <- tagList("Game finished! ", br(), 
               span(class = paste0("player", winner()), players()[[winner()]]), 
               " has won with ", score(), paste0(" point", if (score() > 1) "s." else "."))
           msg <- tagList(msg, actionLink("gotoRankings", "See Rankings."), br(), 
@@ -66,7 +66,7 @@ petanqueServer <- function(input, output, session) {
       })
   
   output$distributuionList <- renderUI({
-        req(nDistr())
+        req(nDistr(), step() == STEP_MAX, gameActive())
         
         div(class = "distr-list", 
             lapply(seq_len(nDistr()), function(iDistr) {
@@ -111,7 +111,7 @@ petanqueServer <- function(input, output, session) {
 
   # animation
   observe({
-        invalidateLater(500, session)
+        invalidateLater(DELAY, session)
         isolate({
               req(step() < STEP_MAX, distance())
               curStep <- step()
@@ -126,7 +126,7 @@ petanqueServer <- function(input, output, session) {
               gamePlot(svgStr())
 
               # update data frame
-              if (curStep == 7)
+              if (curStep == STEP_MAX-1)
                 gameData(posDF)
               
               step(curStep + 1)
@@ -145,7 +145,8 @@ petanqueServer <- function(input, output, session) {
   turnNumber <- reactiveVal(NULL)
   MAX_TURNS <- 6
   STEP_MAX <- 8  # animation steps
-  
+  DELAY <- 500  # animation step delay in ms 
+
   step <- reactiveVal(STEP_MAX)
   distance <- reactiveVal(NULL)
     
