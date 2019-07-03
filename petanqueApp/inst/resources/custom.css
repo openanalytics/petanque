@@ -56,12 +56,18 @@ img.logo {
   padding-right: 50px;
 }
 
+img.logo2 {
+  float: left;
+  height: 50px; 
+  margin: 20px;
+  padding-left: 50px;
+}
 
 div.distr-list {
 	font-size: 24px;
 	border: 4px solid red;
 	padding: 10px;
-	width: 200px;
+	width: 300px;
 }
 
 div.distr {
@@ -72,4 +78,12 @@ div.distr {
 
 div.selected {
 	color: green;
+}
+
+.player1 {
+  color: #FF9400;	
+}
+
+.player2 {
+	color: #0000FF;
 }

@@ -1,4 +1,6 @@
-#' @importFrom DT datatable dataTableOutput renderDataTable
+## TODO: 
+## - improve layout
+
 petanqueServer <- function(input, output, session) {
   
   # debugging
@@ -12,9 +14,13 @@ petanqueServer <- function(input, output, session) {
             uiOutput("message"),        
             if (gameActive() || gameEnded()) 
               fluidRow(
-                  h2("Distributions"),
-                  column(4, uiOutput("distributuionList")),
-                  column(8, uiOutput("gameArea"))
+                  column(3, 
+                      h2("Distribution choices"),
+                      uiOutput("distributuionList")
+                  ),
+                  column(9, 
+                      uiOutput("gameArea")
+                  )
               )
         )
         
@@ -32,13 +38,28 @@ petanqueServer <- function(input, output, session) {
       })
   
   output$message <- renderUI({
-        h2(
-            span(if (gameEnded()) "Game finished!"),
-            span(if (!gameActive()) "Press \"Start\" to start the game!" else "Game is in progress!"),
-            span(if (!is.null(players())) "Playing:", paste(players(), collapse = " and ")),
-            span(if (!is.null(turnNumber())) paste("Turn Number:", turnNumber())),
-            span(if (!is.null(activePlayer())) paste("Current player:", players()[[activePlayer()]]))
-        )
+        
+        if (gameEnded()) {
+          msg <- paste0("Game finished! ", players()[[winner()]], " has won with ", score(), " points.")
+          msg <- tagList(msg, actionLink("gotoRankings", "See Rankings."), "Press \"Start\" to start a new game!") 
+        } else {
+          if (!gameActive()) {
+            msg <- "Press \"Start\" to start a new game!" 
+          } else {
+            msg <- "Game is in progress!"
+          }
+          if (!is.null(players())) 
+            msg <- tagList(msg, br(), 
+                "Playing:", span(players()[[1]], class = "player1"), "and", span(players()[[2]], class = "player2"))
+          if (!is.null(turnNumber())) 
+            msg <- tagList(msg, br(), "Turn Number:", turnNumber())
+          if (!is.null(activePlayer())) 
+            msg <- tagList(msg, "Current player:", 
+                span(class = paste0("player", activePlayer()), players()[[activePlayer()]]))
+        }
+    
+        h2(msg)
+        
       })
   
   output$distributuionList <- renderUI({
@@ -46,8 +67,9 @@ petanqueServer <- function(input, output, session) {
         
         div(class = "distr-list", 
             lapply(seq_len(nDistr()), function(iDistr) {
-                  div(id = paste0("distr", iDistr), class = paste("distr", if (!is.null(activeDistr()) && iDistr == activeDistr()) "selected"),
-                      distrChoices()[[iDistr]]
+                  div(id = paste0("distr", iDistr), 
+                      class = paste("distr", if (!is.null(activeDistr()) && iDistr == activeDistr()) "selected"),
+                      printDistr(distrChoices()[[iDistr]])
                   )
                 })
         )
@@ -55,46 +77,37 @@ petanqueServer <- function(input, output, session) {
       })
   
   output$gameArea <- renderUI({
-        req(chosenDistr())
-        
         tagList(
-            if (gameEnded()) {
-                  span(
-                      paste0("Game finished with Player ", winner(), "(", players()[[winner()]], ") winning with ", score(), " points."),
-                      actionLink("gotoRankings", "See Rankings.") 
-                  )
-                } else {
-                  paste("Player", 3-activePlayer(), "chose", chosenDistr())
-                },
-            plotOutput("pdf")
+            if (!is.null(activePlayer()) && !is.null(chosenDistr()))
+              h3(paste(players()[[3-activePlayer()]], "chose", printDistr(chosenDistr()))),
+            fluidRow(
+              column(12, uiOutput("game"), style = "position: absolute;")
+            )
         )
       })
-  
-  output$pdf <- renderPlot({
-        req(chosenDistr())
-        
-        ## TODO: here we need to show the actual game area + animation etc
-        
-        # placeholder histogram:
-        n <- 1000
-        dat <- switch(chosenDistr(),
-            "normal(4, 3)" = rnorm(n, 4, 3), 
-            "normal(5, 2)" = rnorm(n, 5, 2),
-            "poisson(6)" = rpois(n, 6),
-            "poisson(8)" = rpois(n, 8),
-            "gamma(6, 2)" = rgamma(n, 6, 2),
-            "gamma(5, 1)" = rgamma(n, 5, 1)
-        )
-        hist(dat, xlim = c(0, 10), freq = FALSE)
-        # target
-        points(x = targetLoc(), y = 0, pch = 20, col = "red")
-        
+
+  ## update (actually re-create) game field on each turn
+  observeEvent(chosenDistr(), {
+#        browser()
+        picked <- chosenDistr()
+        if (!is.null(picked)) {
+          
+          gamePlot <- svglite::svgstring(standalone = FALSE, height = 400/72, width = 800/72)
+          posDF <- throwBall(distribution = picked[["type"]],
+              param1 = picked[["param1"]], param2 = picked[["param2"]], gameData()) 
+          dev.off()
+          
+          gameData(posDF)
+          output$game <- renderUI({ HTML(gamePlot()) })
+        }
       })
   
   gameActive <- reactiveVal(FALSE)
   gameEnded <- reactiveVal(FALSE)
-  players <- reactiveVal(NULL)
-  activePlayer <- reactiveVal(NULL)
+  gameData <- reactiveVal(NULL)  ## data frame with all game data
+
+  players <- reactiveVal(NULL)  ## vector of names
+  activePlayer <- reactiveVal(NULL)  ## index of active player (1 or 2)
   turnNumber <- reactiveVal(NULL)
   MAX_TURNS <- 6
   winner <- reactiveVal(NULL)
@@ -120,32 +133,28 @@ petanqueServer <- function(input, output, session) {
           # further logic is called only after confirmation of names 
         } else {
           ## have chosen a distribution   
-          # TODO: show a throw
-          chosenDistr(distrChoices()[[activeDistr()]])
-          
-          ## Switch player:
+          picked <- distrChoices()[[activeDistr()]] 
+          chosenDistr(picked)
           # change the player
           curPlayer <- activePlayer()
           activePlayer(3-curPlayer)
-          # resample distributions
-          distrChoices(sampleDistribution())
-          # reset distr selection to the 1st
-          activeDistr(1)
           # increase turn
           nextTurn <- turnNumber() + 1
           if (nextTurn > MAX_TURNS) {
-            # end game
-            gameEnded(TRUE)
-            activePlayer(NULL)
-            turnNumber(NULL)
             # TODO: determine the winner and show score
             score(sample(1:3, 1))
             winner(sample(1:2, 1))
             # TODO: update and show ranking
             updateRanking(players(), winner(), score())
-            # TODO: prepare for new game
+            # end game
+            gameEnded(TRUE)
             gameActive(FALSE)
           } else {
+            # resample distributions
+            distrChoices(generateOptions())
+            # reset distr selection to the 1st
+            activeDistr(1)
+            # set next turn
             turnNumber(nextTurn)
           }
         }
@@ -192,18 +201,28 @@ petanqueServer <- function(input, output, session) {
   startNewGame <- function(playerNames) {
     # start game
     players(NULL)
+    activePlayer(NULL)
+    turnNumber(NULL)
+    chosenDistr(NULL)
     gameEnded(FALSE)
     gameActive(TRUE)
+    gameData(NULL)
+    
+    gamePlot <- svglite::svgstring(standalone = FALSE, height = 400/72, width = 800/72)
+    posDF <- newGame()
+    dev.off()
+    output[["game"]] <- renderUI({ HTML(gamePlot()) })
+    gameData(posDF)
+    
     # use names for the game
     players(playerNames)
-    # sample the target
-    targetLoc(sampleTarget())
     # Set active player
     activePlayer(1)
     # Set turn
     turnNumber(1)
     # Sample distribution
-    distrChoices(sampleDistribution())
+    distrChoices(generateOptions())
   }
   
 }
+

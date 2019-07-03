@@ -1,5 +1,11 @@
+## TODO:
+## - make it possible to switch to/from ranking with buttons
+## - add button icons on the screen (for start/enter, up/down, ranking/game)
+## - add useR logo
+## - remove tabs or make them nicer
+
 #' @importFrom utils packageDescription packageVersion
-oaTitlePanel <- function(appName, pkgName, logo, version = TRUE) {
+oaTitlePanel <- function(appName, pkgName, logo, logo2 = NULL, version = TRUE) {
   
   addResourcePath("logo", dirname(normalizePath(logo)))
   
@@ -15,10 +21,14 @@ oaTitlePanel <- function(appName, pkgName, logo, version = TRUE) {
                 )
             ),
           
-          div(if (file.exists(logo)) 
-                img(src = file.path("logo", basename(logo)), class = "logo"), 
+          div(
+              if (!is.null(logo2) && file.exists(logo2))
+                img(src = file.path("logo", basename(logo2)), class = "logo2"),
               appName,
-              class = "logo-div")
+              if (file.exists(logo))
+                img(src = file.path("logo", basename(logo)), class = "logo"),
+              class = "logo-div"
+          )
       )
   )
 }
@@ -32,6 +42,7 @@ petanqueUI <- function(debug = FALSE) {
       
       # keyboard inputs
       # here we prevent key presses when modal is shown
+      # TODO: add keys to go to ranking and back to the game (+ show controls on the screen) 
       tags$script('
               $(document).on("keydown", function (e) {
    						  if (!document.getElementById("shiny-modal")) {
@@ -55,6 +66,7 @@ petanqueUI <- function(debug = FALSE) {
       # title panel
       oaTitlePanel(appName = "Petanque Shiny App", pkgName = "petanqueApp",
           logo = system.file("resources", "logo_text.png", package = "petanqueApp"),
+          logo2 = system.file("resources", "useR2019.png", package = "petanqueApp"),
           version = FALSE
       ),
       
