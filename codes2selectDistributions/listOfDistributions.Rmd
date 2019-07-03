@@ -22,17 +22,18 @@ targetLocation <- runif(1, min = maxTarget/2, max = maxTarget)
 I have considered both continuous and discrete distributions, but except for
 normal distribution they are all taking positive values. In most of the cases,
 I let the parameters of the distribution depend on `maxTarget`. Also, the
-parameters themselves are generated from suitabel distributions. 
+parameters themselves are mostly generated from suitable distributions. 
 
 In the following sections I will review the distributions, give their density,
-expectation and variance (these can be used to make the cheat sheet), also they
-way the parameters are defined. A plot is also given showing the density of
-generated target location and the numbers generated from each distribution
-(based on 1 million replications).
+expectation and variance (these can be used to make the cheat sheet, and it
+won't hur to double check the equations), also the way the parameters are
+defined. A plot is also given showing the density of generated target location
+and the numbers generated from each distribution (based on 2 million
+replications).
 
 There are some remarks:
 
-Weibull and log-normal have long tails, so it is
+Some of the distributions (like log-normal) have long tails, so it is
 possible that we get very large numbers from them. With other distributions
 also, obtaining large numebrs is still possible (though not much likely). I
 think that is still interesting, and we can forsee some expression like "You
@@ -40,22 +41,16 @@ landed the ball on the moon" or Mars, or Uranus, depending on how large the
 number is, and then such balls can be considered out of game! But if you find
 it not that cool, we can change distributions.
 
-For now, we would not allow throw a ball backward, so no negativer values are
-allowed, the only distributuion here with a possible negative value is normal,
-and that is why there I've used a very small variance, but also a mean which
-is not that close to the target. So if the user wants to use normal, it comes
-with the possibility of landing the ball a bit far from the target.
-
-We also have two irrelevant distributions: Bernouli and beta. Both of them
+We have two irrelevant distributions: Bernouli and beta. Both of them
 generate random numbers between zero and one, but as Jason suggested, that
-could be cool as well.
+could be cool as well. And as we will see, even these two still have a chance!
 
 I've also include degenerate distribtion. That means our random variable takes
-only one value with probability one. In fact, no randomness here. That single
-value itself is generated from a uniform distribution and it will usually be
-far from the target. I think that would face the user with the question of
-whether take this exact value which is a bit far from the target, or try a
-random number which could possibly closer or not. 
+only one value with probability one. In fact, that's not a random variable
+anymore. That single value itself is generated from a uniform distribution and
+it will usually be far from the target. I think that would face the user with
+the question of whether it should take this exact value which is a bit far from
+the target, or try a random number which could possibly be closer or not. 
 
 ## Binomial
 
@@ -140,7 +135,7 @@ Expectation: $\lambda \Gamma(1+1/k)$
 Variance: $\lambda^2 \left[\Gamma\left(1 + \frac{2}{k} \right) - \left(\Gamma\left(1+\frac{1}{k} \right) \right)^2 \right]$
 
 ```{r, eval = FALSE}
-rweibull(1, 0.8, runif(1, maxTarget/2 , maxTarget*2))
+rweibull(1, maxTarget * runif(1,0.5,2.5), maxTarget * runif(1,0.2,1.5))
 ```
 
 ```{r, echo = FALSE}
@@ -214,7 +209,7 @@ Expectation: $\mu$
 Variance: $\sigma^2$
 
 ```{r, eval = FALSE}
-rnorm(1, maxTarget * runif(1, 0.4, 0.6), runif(1, 0.6, 0.9))
+rnorm(1, maxTarget * runif(1, 0.4, 0.6), runif(1, 0.5, 3))
 ```
 
 ```{r, echo = FALSE}
@@ -289,7 +284,7 @@ Variance: $0$
 
 ```{r, eval = FALSE}
 ## This is only used to generate k0 above
-runif(1, min = maxTarget*0.05, max = maxTarget*1.1)
+runif(1, min = maxTarget*0.05, max = maxTarget*1.5)
 ```
 
 ```{r, echo = FALSE}
@@ -303,3 +298,86 @@ plot(density(allRes[,1]), xlim = xLim, ylim = yLim, main = "Degenrate")
 lines(density(allRes[,selCol]), col = 2, lty = 2)
 legend("topleft", c("target", "distribution"), lty = 1:2, col = 1:2)
 ```
+
+
+
+# Some summary
+
+Random numbers are generated 2,000,000 times for the target location, as well as
+from the 10 candidate distributions. The following histrogram shows the smallest
+absolute difference of the generated numbers from various distribution and the
+target location. 
+
+```{r, echo = FALSE}
+hist(apply(allDiffs, 1, min), main = "Absolute minimum distance among all 10 distributions",
+		xlab = "Absolute difference with target")
+```
+
+As we may see, with the current sets of parameters, in most of the cases the
+difference is not larger than 2. In fact, in
+`r round(sum(apply(allDiffs, 1, min) < 2)/nrow(allDiffs),3)` of times we have the
+minimum difference smalelr than 2, and in
+`r round(sum(apply(allDiffs, 1, min) < 1)/nrow(allDiffs),3)` of times it is
+smaller than 1. 
+
+But we also need the minimum difference to be obtained from different
+distributions, otherwise the players would know which one is giving the best
+results after a couple of trials. Here is the frequency table of proportion of
+times each distribution has generated the closest number to the target.
+
+
+```{r echo = FALSE}
+knitr::kable(t(tab2display), digits = 7, align=rep('c', 10))
+```
+
+Though they are not equally distributed among different distributions, but I
+guess every one has a reasonable share to make it difficult enough for the user
+to guess the best one.
+
+It is also interesting to see that in some rare occasions even Bernoulli and
+beta distributions would give the shortest distance! The following tables will
+display these cases. That usually happens when the target is small, but all
+the others are too large or too small, so then a number between 0 and 1 is
+closer to the target! It should be interesting if this happens to someone! The
+chance is virtually zero!
+
+
+```{r, echo = FALSE, caption = "Cases where Bernoulli had the shortest distance"}
+knitr::kable((allRes[which(apply(allDiffs, 1, which.min) == 8),]), digits = 3, align=rep('c', 10))
+```
+
+```{r, echo = FALSE, caption = "Cases where beta had the shortest distance"}
+knitr::kable(t(allRes[which(apply(allDiffs, 1, which.min) == 9),]), digits = 3, align=rep('c', 10))
+```
+
+
+# A suggestion for selecting 3 distributions
+
+As we could see, most of the times we have at least one of the distributions
+that gives a random number with at most 2 units further than the target. Now
+if we select 3 random distributions we cannot be sure at least one of them is
+like that, but I guess, what we can do is:
+
+* Generate our random numbers from all 10 distributions
+* Compute their absolute differences with target location
+* Select the closest one (1st), also two others with medium (4th) and large (8th)
+  distances
+
+Let me see for our 2,000,000 replications, how many times each of the 10
+distributions would appear among the first till 10th best distributions (with
+respect to distance from the target location).
+
+```{r, echo = FALSE}
+allDists <- c("binomial", "Poisson", "uniform", "Weibull", 
+		"log-normal", "chi2", "normal", "Bernouli", "beta", "degenerate")
+orederedDiffs <- apply(allDiffs, 1, order)
+tabFreqBest <- apply(orederedDiffs, 1, table)
+rownames(tabFreqBest) <- allDists
+colnames(tabFreqBest) <- paste("best", 1:10, sep = "")
+knitr::kable(tabFreqBest/nrow(allDiffs), digits = 3)
+
+```
+
+As we can see, with this way of selection, still all of the distributions have
+the chance to be there, also we can be sure in more than 95% of the cases we
+have at least one distribution with a distance smaller than 2 units.
