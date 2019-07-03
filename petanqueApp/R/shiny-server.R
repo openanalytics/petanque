@@ -237,5 +237,5 @@ petanqueServer <- function(input, output, session) {
 }
 
 svgDevice <- function() {
-  svglite::svgstring(standalone = FALSE, height = 400/96, width = 800/96)
+  svglite::svgstring(standalone = FALSE, height = 400/72, width = 800/72)
 }
