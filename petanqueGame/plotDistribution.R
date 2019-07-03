@@ -14,7 +14,7 @@ drawDistribution <- function(distribution, param1, param2) {
 		drawGeometric(param1)
 	if(distribution == "degenerate")
 		drawDegenerate(param1)
-	if(distribution == "chisquared")
+	if(distribution == "chisq")
 		drawChiSquared(param1)
 	if(distribution == "weibull")
 		drawWeibull(param1, param2)

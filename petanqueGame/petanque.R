@@ -7,6 +7,7 @@ source("drawFunctions.R")
 source("plotDistribution.R")
 source("generateOptions.R")
 source("newGame.R")
+source("messages.R")
 
 
 posDF <- newGame()
@@ -45,7 +46,18 @@ throwBall <- function(distribution = "normal", param1 = 5,
 	
 	posDF$y[i] <- ifelse(distance > 10 | distance < 0, -0.3, 0.09)
 	points(x = distance, y = posDF$y[i], col = oaColors(posDF$color[i]),
-			cex = 3, pch = 19)  
+			cex = 3, pch = 19)
+	
+	if(distance < 0) {
+		msg <- generateNegativeMessage()
+		text(msg, x = 5, y = -0.4, font = 2, col = oaColors(posDF$color[i]))
+	}
+	
+	if(distance > 10) {
+		msg <- generatePositiveMessage(distance)
+		text(msg, x = 5, y = -0.4, font = 2, col = oaColors(posDF$color[i]))
+	}
+		
 
 	posDF$thrown[i] <- TRUE
 	posDF$x[i] <- distance
@@ -75,7 +87,7 @@ posDF <- pickOption(options, optionSelected = 3, posDF); options <- generateOpti
 #posDF <- throwBall(distribution = "normal", param1 = 5, param2 = 1.5, posDF); Sys.sleep(2)
 
 determineOutcome(posDF)
-newGame()
+posDF <- newGame()
 
 
 

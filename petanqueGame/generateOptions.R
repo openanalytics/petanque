@@ -6,7 +6,7 @@ generateOptions <- function() {
 	distributions <- c("normal", "uniform", "poisson", "bernoulli", "binomial", 
 			"geometric", "degenerate", "chisq", "weibull")
 	type <- sample(distributions, 3, replace = FALSE, 
-			prob = c(15, 8, 8, 1, 8, 5, 3, 5, 4))
+			prob = c(15, 8, 8, 1, 8, 6, 3, 5, 4))
 	maxTarget <- 10
 	
 	out <- list()
@@ -32,8 +32,8 @@ generateOptions <- function() {
 		}
 		
 		if(type[i] == "binomial") {
-			param1 <- round(maxTarget * runif(1, 0.5, 1.2))+ 1
-			param2 <- round(rbeta(1, 1.5, 0.6), 1)
+			param1 <- round(maxTarget * runif(1, 0.5, 1.3))+ 1
+			param2 <- round(rbeta(1, 1, 0.9), 2)
 		}
 		
 		if(type[i] == "geometric") {
@@ -42,7 +42,7 @@ generateOptions <- function() {
 		}
 		
 		if(type[i] == "degenerate") {
-			param1 <- round(runif(1, 0.5, 11), 1)
+			param1 <- round(runif(1, 0.5, 11), 2)
 			param2 <- NA
 		}
 		
