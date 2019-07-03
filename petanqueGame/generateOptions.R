@@ -20,37 +20,37 @@ generateOptions <- function() {
 			param2 <- round(param1 + runif(1, 0.1, 7), 1)
 		}
 		
-		if(type == "poisson") {
+		if(type[i] == "poisson") {
 			param1 <- round(8 * rbeta(1, 1.5, 0.6), 1)
 			param2 <- NULL
 		}
 		
-		if(type == "bernoulli") {
+		if(type[i] == "bernoulli") {
 			param1 <- runif(1, 0.01, 0.99)
 			param2 <- NULL
 		}
 		
-		if(type == "binomial") {
+		if(type[i] == "binomial") {
 			param1 <- round(maxTarget * runif(1, 0.5, 1.2))+ 1
 			param2 <- rbeta(1, 1.5, 0.6)
 		}
 		
-		if(type == "geometric") {
+		if(type[i] == "geometric") {
 			param1 <- runif(1, 0.05, 0.8)
 			param2 <- NULL
 		}
 		
-		if(type == "degenerate") {
+		if(type[i] == "degenerate") {
 			param1 <- runif(1, 0.5, 11)
 			param2 <- NULL
 		}
 		
-		if(type == "chisq") {
+		if(type[i] == "chisq") {
 			param1 <- 10 * rbeta(1,1.5,0.6)
 			param2 <- NULL
 		}
 		
-		if(type == "weibull") {
+		if(type[i] == "weibull") {
 			param1 <- 0.8
 			param2 <- runif(1, maxTarget/5 , maxTarget*1.5)
 		}
