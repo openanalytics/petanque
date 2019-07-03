@@ -89,33 +89,34 @@ petanqueServer <- function(input, output, session) {
         )
       })
 
-  ## update (actually re-create) game field on each turn
+  ### plot drawing:
+  ## our reactive object is `svglite::svgstring` device
+  ## it gets changed after start or after a distribution is chosen (turn)
+  
+  ## update game field on each turn
   observeEvent(chosenDistr(), {
         picked <- chosenDistr()
         if (!is.null(picked)) {
           
-          gamePlot <- svglite::svgstring(standalone = FALSE, height = 400/72, width = 800/72)
+          svgStr <- svgDevice()
           posDF <- throwBall(distribution = picked[["type"]],
               param1 = picked[["param1"]], param2 = picked[["param2"]], gameData()) 
           dev.off()
-          
+          gamePlot(svgStr())          
           gameData(posDF)
-          output$game <- renderUI({ HTML(gamePlot()) })
         }
       })
+  output$game <- renderUI({ HTML(gamePlot()) })
   
   gameActive <- reactiveVal(FALSE)
   gameEnded <- reactiveVal(FALSE)
   gameData <- reactiveVal(NULL)  ## data frame with all game data
-
+  gamePlot <- reactiveVal(NULL)
+  
   players <- reactiveVal(NULL)  ## vector of names
   activePlayer <- reactiveVal(NULL)  ## index of active player (1 or 2)
   turnNumber <- reactiveVal(NULL)
   MAX_TURNS <- 6
-  winner <- reactiveVal(NULL)
-  score <- reactiveVal(NULL)
-  
-  targetLoc <- reactiveVal(NULL)
   
   distrChoices <- reactiveVal(NULL)
   activeDistr <- reactiveVal(1)
@@ -124,6 +125,15 @@ petanqueServer <- function(input, output, session) {
   nDistr <- reactive({
         req(distrChoices())
         length(distrChoices())
+      })
+  
+  score <- reactive({
+        req(gameData())
+        determineOutcome(gameData())$pointsWon
+      })
+  winner <- reactive({
+        req(gameData())
+        winnerNumber(determineOutcome(gameData())$winner)
       })
   
 # inputs
@@ -143,10 +153,6 @@ petanqueServer <- function(input, output, session) {
           # increase turn
           nextTurn <- turnNumber() + 1
           if (nextTurn > MAX_TURNS) {
-            # determine the winner and show score
-            result <- determineOutcome(gameData())
-            score(result$pointsWon)
-            winner(winnerNumber(result$winner))
             # TODO: update and show ranking
             updateRanking(players(), winner(), score())
             # end game
@@ -211,10 +217,10 @@ petanqueServer <- function(input, output, session) {
     gameActive(TRUE)
     gameData(NULL)
     
-    gamePlot <- svglite::svgstring(standalone = FALSE, height = 400/96, width = 800/96)
+    svgStr <- svgDevice()
     posDF <- newGame()
     dev.off()
-    output[["game"]] <- renderUI({ HTML(gamePlot()) })
+    gamePlot(svgStr())
     gameData(posDF)
     
     # use names for the game
@@ -229,3 +235,6 @@ petanqueServer <- function(input, output, session) {
   
 }
 
+svgDevice <- function() {
+  svglite::svgstring(standalone = FALSE, height = 400/96, width = 800/96)
+}
