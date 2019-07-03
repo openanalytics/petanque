@@ -6,7 +6,8 @@ generateOptions <- function() {
 	distributions <- c("normal", "uniform", "poisson", "bernoulli", "binomial", 
 			"geometric", "degenerate", "chisq", "weibull")
 	type <- sample(distributions, 3, replace = FALSE, 
-			prob = c(15, 8, 8, 1, 8, 5, 3, 5, 3))
+			prob = c(15, 8, 8, 1, 8, 5, 3, 5, 4))
+	maxTarget <- 10
 	
 	out <- list()
 	for(i in 1:length(type)) {
@@ -22,37 +23,37 @@ generateOptions <- function() {
 		
 		if(type[i] == "poisson") {
 			param1 <- round(8 * rbeta(1, 1.5, 0.6), 1)
-			param2 <- NULL
+			param2 <- NA
 		}
 		
 		if(type[i] == "bernoulli") {
-			param1 <- runif(1, 0.01, 0.99)
-			param2 <- NULL
+			param1 <- round(runif(1, 0.01, 0.99), 2)
+			param2 <- NA
 		}
 		
 		if(type[i] == "binomial") {
 			param1 <- round(maxTarget * runif(1, 0.5, 1.2))+ 1
-			param2 <- rbeta(1, 1.5, 0.6)
+			param2 <- round(rbeta(1, 1.5, 0.6), 1)
 		}
 		
 		if(type[i] == "geometric") {
-			param1 <- runif(1, 0.05, 0.8)
-			param2 <- NULL
+			param1 <- round(runif(1, 0.1, 0.8), 1)
+			param2 <- NA
 		}
 		
 		if(type[i] == "degenerate") {
-			param1 <- runif(1, 0.5, 11)
-			param2 <- NULL
+			param1 <- round(runif(1, 0.5, 11), 1)
+			param2 <- NA
 		}
 		
 		if(type[i] == "chisq") {
-			param1 <- 10 * rbeta(1,1.5,0.6)
-			param2 <- NULL
+			param1 <- round(10 * rbeta(1,1.5,0.6), 1)
+			param2 <- NA
 		}
 		
 		if(type[i] == "weibull") {
 			param1 <- 0.8
-			param2 <- runif(1, maxTarget/5 , maxTarget*1.5)
+			param2 <- round(runif(1, maxTarget/5 , maxTarget*1.5), 1)
 		}
 		
 		out[[i]] <- data.frame(type = type[i], param1 = param1, param2 = param2)
@@ -76,7 +77,7 @@ printOptions <- function(options) {
 	for(i in 1:3) {
 		vec <- options[[i]]
 		
-		if(!is.null(param2)) {
+		if(!is.na(vec['param2'])) {
 			cat('Option ', i, ": ", unlist(vec['type']), "(", unlist(vec['param1']),
 					", ", unlist(vec['param2']), ")\n", sep = "")
 		} else {

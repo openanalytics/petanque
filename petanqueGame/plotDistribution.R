@@ -17,20 +17,23 @@ drawDistribution <- function(distribution, param1, param2) {
 	if(distribution == "chisquared")
 		drawChiSquared(param1)
 	if(distribution == "weibull")
-		drawWeibull(param1, param2)  # TODO make this function
+		drawWeibull(param1, param2)
 }
 
 drawWeibull <- function(param1, param2) {
 	
-	xVec <- seq(0, 12, length.out = 1200)
+	xVec <- seq(0.1, 12, length.out = 1200)
 	yVec <- dweibull(xVec, shape = param1, scale = param2)
 	yVec <- yVec / max(yVec)
+	
+	points(xVec, yVec, type = "l", lwd = 3, col = grey(0.7))
+	segments(x0 = 0, y0 = 0, x1 = 10, lwd = 3)
 	
 }
 
 drawChiSquared <- function(param1) {
 	
-	xVec <- seq(0, 12, length.out = 1200)
+	xVec <- seq(0.1, 12, length.out = 1200)
 	yVec <- dchisq(xVec, df = param1)
 	yVec <- yVec / max(yVec)
 	
@@ -60,7 +63,7 @@ drawGeometric <- function(param1) {
 	
 }
 
-drawBernoulli <- function(param1, param2) {
+drawBinomial <- function(param1, param2) {
 	
 	xVec <- 0:param1
 	yVec <- dbinom(xVec, size = param1, prob = param2)
