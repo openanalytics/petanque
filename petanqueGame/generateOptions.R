@@ -1,11 +1,11 @@
 
 
 
-generateOptions <- function() {
+generateOptions <- function(n = 3) {
 	
 	distributions <- c("normal", "uniform", "poisson", "bernoulli", "binomial", 
 			"geometric", "degenerate", "chisq", "weibull")
-	type <- sample(distributions, 3, replace = FALSE, 
+	type <- sample(distributions, n, replace = FALSE, 
 			prob = c(15, 8, 8, 1, 8, 6, 3, 5, 4))
 	maxTarget <- 10
 	
@@ -56,8 +56,7 @@ generateOptions <- function() {
 			param2 <- round(runif(1, maxTarget/5 , maxTarget*1.5), 1)
 		}
 		
-		out[[i]] <- data.frame(type = type[i], param1 = param1, param2 = param2)
-		out[[i]] %>% mutate_if(is.factor, as.character) -> out[[i]]
+		out[[i]] <- list(type = type[i], param1 = param1, param2 = param2)
 	}
 	
 	
