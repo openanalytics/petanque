@@ -3,25 +3,59 @@
 
 generateOptions <- function() {
 	
-	distributions <- c("normal", "uniform")
-	type <- sample(distributions, 3, replace = TRUE)
+	distributions <- c("normal", "uniform", "poisson", "bernoulli", "binomial", 
+			"geometric", "degenerate", "chisq", "weibull")
+	type <- sample(distributions, 3, replace = FALSE, 
+			prob = c(15, 8, 8, 1, 8, 5, 3, 5, 3))
 	
 	out <- list()
 	for(i in 1:length(type)) {
 		if(type[i] == "normal") {
 			param1 <- round(runif(1, 1, 9), 1)
 			param2 <- round(runif(1, 0.5, 3.5), 1)
-			out[[i]] <- data.frame(type = type[i], param1 = param1, param2 = param2)
-			out[[i]][, 1] <- as.character(out[[i]][, 1])
 		}
 		
 		if(type[i] == "uniform") {
 			param1 <- round(runif(1, -1, 7), 1)
 			param2 <- round(param1 + runif(1, 0.1, 7), 1)
-			out[[i]] <- data.frame(type = type[i], param1 = param1, param2 = param2)
 		}
 		
+		if(type == "poisson") {
+			param1 <- round(8 * rbeta(1, 1.5, 0.6), 1)
+			param2 <- NULL
+		}
 		
+		if(type == "bernoulli") {
+			param1 <- runif(1, 0.01, 0.99)
+			param2 <- NULL
+		}
+		
+		if(type == "binomial") {
+			param1 <- round(maxTarget * runif(1, 0.5, 1.2))+ 1
+			param2 <- rbeta(1, 1.5, 0.6)
+		}
+		
+		if(type == "geometric") {
+			param1 <- runif(1, 0.05, 0.8)
+			param2 <- NULL
+		}
+		
+		if(type == "degenerate") {
+			param1 <- runif(1, 0.5, 11)
+			param2 <- NULL
+		}
+		
+		if(type == "chisq") {
+			param1 <- 10 * rbeta(1,1.5,0.6)
+			param2 <- NULL
+		}
+		
+		if(type == "weibull") {
+			param1 <- 0.8
+			param2 <- runif(1, maxTarget/5 , maxTarget*1.5)
+		}
+		
+		out[[i]] <- data.frame(type = type[i], param1 = param1, param2 = param2)
 		out[[i]] %>% mutate_if(is.factor, as.character) -> out[[i]]
 	}
 	
