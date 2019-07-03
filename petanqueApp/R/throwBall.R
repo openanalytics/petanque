@@ -17,26 +17,7 @@ throwBall <- function(distribution = "normal", param1 = 5,
 	
 	refreshPlot(posDF)
 	i <- min(which(!posDF$thrown))
-	
-	# TODO add distributions
-	if(distribution == "normal")
-		distance <- rnorm(1, mean = param1, sd = param2)
-	if(distribution == "uniform")
-		distance <- runif(1, param1, param2)
-	if(distribution == "poisson")
-		distance <- rpois(1, lambda = param1)
-	if(distribution == "bernoulli")
-		distance <- rbinom(1, 1, prob = param1)
-	if(distribution == "binomial")
-		distance <- rbinom(1, size = param1, prob = param2)
-	if(distribution == "geometric")
-		distance <- rgeom(1, prob = param1)
-	if(distribution == "degenerate")
-		distance <- param1
-	if(distribution == "chisq")
-		distance <- rchisq(1, df = param1)
-	if(distribution == "weibull")
-		distance <- rweibull(1, shape = param1, scale = param2)
+	distance <- distanceFromDistribution(distribution = distribution, param1 = param1, param2 = param2)
 	
 	drawDistribution(distribution = distribution, param1 = param1, param2 = param2)
 	animateThrow(distance, color = oaColors(posDF$color[i]))
@@ -66,4 +47,20 @@ throwBall <- function(distribution = "normal", param1 = 5,
 	}
 		
 	return(posDF)
+}
+
+
+distanceFromDistribution <- function(distribution, param1, param2) {
+  # TODO add distributions
+  switch(distribution,
+      "normal" = rnorm(1, mean = param1, sd = param2),
+      "uniform" = runif(1, param1, param2),
+      "poisson" = rpois(1, lambda = param1),
+      "bernoulli" = rbinom(1, 1, prob = param1),
+      "binomial" = rbinom(1, size = param1, prob = param2),
+      "geometric" = rgeom(1, prob = param1),
+      "degenerate" = param1,
+      "chisq" = rchisq(1, df = param1),
+      "weibull" = rweibull(1, shape = param1, scale = param2)
+  )
 }
