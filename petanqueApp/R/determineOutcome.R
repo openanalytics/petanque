@@ -18,3 +18,8 @@ determineOutcome <- function(posDF) {
 	
 	return(list(winner = winner, pointsWon = pointsWon))
 }
+
+# p1 -> 1, p2 -> 2
+winnerNumber <- function(winner) { 
+  as.numeric(gsub("[^0-9]", "", as.character(winner)))
+}

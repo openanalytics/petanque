@@ -40,11 +40,14 @@ petanqueServer <- function(input, output, session) {
   output$message <- renderUI({
         
         if (gameEnded()) {
-          msg <- paste0("Game finished! ", players()[[winner()]], " has won with ", score(), " points.")
-          msg <- tagList(msg, actionLink("gotoRankings", "See Rankings."), br(), "Press \"Start\" to start a new game!") 
+          msg <- tagList("Game finished! ", 
+              span(class = paste0("player", winner()), players()[[winner()]]), 
+              " has won with ", score(), paste0(" point", if (score() > 1) "s." else "."))
+          msg <- tagList(msg, actionLink("gotoRankings", "See Rankings."), br(), 
+              "Press", actionLink("enter", "Start"), "to start a new game!") 
         } else {
           if (!gameActive()) {
-            msg <- "Press \"Start\" to start a new game!" 
+            msg <- tagList("Press", actionLink("enter", "Start"), "to start a new game!") 
           } else {
             msg <- "Game is in progress!"
           }
@@ -88,7 +91,6 @@ petanqueServer <- function(input, output, session) {
 
   ## update (actually re-create) game field on each turn
   observeEvent(chosenDistr(), {
-#        browser()
         picked <- chosenDistr()
         if (!is.null(picked)) {
           
@@ -141,9 +143,10 @@ petanqueServer <- function(input, output, session) {
           # increase turn
           nextTurn <- turnNumber() + 1
           if (nextTurn > MAX_TURNS) {
-            # TODO: determine the winner and show score
-            score(sample(1:3, 1))
-            winner(sample(1:2, 1))
+            # determine the winner and show score
+            result <- determineOutcome(gameData())
+            score(result$pointsWon)
+            winner(winnerNumber(result$winner))
             # TODO: update and show ranking
             updateRanking(players(), winner(), score())
             # end game
