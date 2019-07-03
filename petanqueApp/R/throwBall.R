@@ -13,27 +13,30 @@
 #posDF <- newGame()
 
 throwBall <- function(distribution = "normal", param1 = 5, 
-		param2 = 1, posDF = posDF, step = 0) {
+		param2 = 1, posDF = posDF, step = Inf, distance = NULL) {
   
   i <- min(which(!posDF$thrown))
-  distance <- distanceFromDistribution(distribution = distribution, param1 = param1, param2 = param2)
+  if (is.null(distance))
+    distance <- distanceFromDistribution(distribution = distribution, param1 = param1, param2 = param2)
   
-  if (step <= 1) {
+  if (step >= 1) {
     refreshPlot(posDF)
     
     drawDistribution(distribution = distribution, param1 = param1, param2 = param2)
     
   }
-  if (step <= 5) {
+  if (step >= 2) {
     animateThrow(distance, color = oaColors(posDF$color[i]), step = step-1)
   }
-  if (step <= 6) {
+  if (step >= 6) {
     segments(x0 = distance, y0 = 1.1, y1 = 0, col = oaColors(posDF$color[i]), lwd = 4)
     
     posDF$y[i] <- ifelse(distance > 10 | distance < 0, -0.3, 0.09)
     points(x = distance, y = posDF$y[i], col = oaColors(posDF$color[i]),
         cex = 3, pch = 19)
-    
+  }
+
+  if (step >= 7) {	
     if(distance < 0) {
       msg <- generateNegativeMessage()
       text(msg, x = 5, y = -0.4, font = 2, col = oaColors(posDF$color[i]))
@@ -43,14 +46,12 @@ throwBall <- function(distribution = "normal", param1 = 5,
       msg <- generatePositiveMessage(distance)
       text(msg, x = 5, y = -0.4, font = 2, col = oaColors(posDF$color[i]))
     }
-  }	
-
-	posDF$thrown[i] <- TRUE
-	posDF$x[i] <- distance
-  if (step <= 7) {	
+    
+    posDF$thrown[i] <- TRUE
+    posDF$x[i] <- distance
     # TODO posDF <- detectColission()
     if(i < 7) {
-      drawHuman(color = posDF$color[i+1]); Sys.sleep(1)
+      drawHuman(color = posDF$color[i+1]) #; Sys.sleep(1)
     }
   }
 	return(posDF)

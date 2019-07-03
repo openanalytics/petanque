@@ -84,17 +84,30 @@ drawHuman <- function(color = "orange") {
 		
 }
 
-animateThrow <- function(distance, color, step = 0) {
-	if (step <= 1)
+## NB: step = Inf preserves 'usual' animation, otherwise 'shiny' animation is used
+animateThrow <- function(distance, color, step = Inf) {
+  if (step >= 1) {
     points(x = 1.2 * distance / 5, y = 0.4, cex = 1, pch = 19, col = color)
-  if (step <= 2)
+    if (is.infinite(step))
+      Sys.sleep(0.5)
+  }
+  if (step >= 2) {
     points(x = 2.2 * distance / 5, y = 0.65, cex = 1.5, pch = 19, col = color)
-  if (step <= 3)
+    if (is.infinite(step))
+      Sys.sleep(0.5)
+  }
+  if (step >= 3) {
     points(x = 3.5 * distance / 5, y = 0.6, cex = 2, pch = 19, col = color)
-  if (step <= 4)
+    if (is.infinite(step))
+      Sys.sleep(0.5)
+  }
+  if (step >= 4) {
     points(x = 4.3 * distance / 5, y = 0.4, cex = 2.5, pch = 19, col = color)
-	# points(x = distance, y = 0, cex = 3, pch = 19, col = color); Sys.sleep(1/30)
-	
+    if (is.infinite(step))
+      Sys.sleep(0.5)
+  }
+  # points(x = distance, y = 0, cex = 3, pch = 19, col = color); Sys.sleep(1/30)
+
 	# then wipe it
 	
 }
@@ -119,6 +132,6 @@ refreshPlot <- function(posDF) {
 	for(jRow in 2:7)
 		if(posDF$thrown[jRow])
 			points(x = posDF$x[jRow], y = posDF$y[jRow], col = oaColors(posDF$color[jRow]), cex = 3, pch = 19)
-	drawHuman(color = "none"); Sys.sleep(0.3)
+	drawHuman(color = "none"); #Sys.sleep(0.3)
 	
 }

@@ -39,14 +39,14 @@ petanqueServer <- function(input, output, session) {
   
   output$message <- renderUI({
         
-        if (gameEnded()) {
+        if (gameEnded() && step() == STEP_MAX) {
           msg <- tagList("Game finished! ", 
               span(class = paste0("player", winner()), players()[[winner()]]), 
               " has won with ", score(), paste0(" point", if (score() > 1) "s." else "."))
           msg <- tagList(msg, actionLink("gotoRankings", "See Rankings."), br(), 
               "Press", actionLink("enter", "Start"), "to start a new game!") 
         } else {
-          if (!gameActive()) {
+          if (!gameActive() && step() == STEP_MAX) {
             msg <- tagList("Press", actionLink("enter", "Start"), "to start a new game!") 
           } else {
             msg <- "Game is in progress!"
@@ -80,12 +80,13 @@ petanqueServer <- function(input, output, session) {
       })
   
   output$gameArea <- renderUI({
+        msg <- if (!is.null(activePlayer()) && !is.null(chosenDistr())) {
+              paste(players()[[3-activePlayer()]], "chose", printDistr(chosenDistr()))
+            } else "Choose your distribution"
+        
         tagList(
-            if (!is.null(activePlayer()) && !is.null(chosenDistr()))
-              h3(paste(players()[[3-activePlayer()]], "chose", printDistr(chosenDistr()))),
-            fluidRow(
-              column(12, uiOutput("game"), style = "position: absolute;")
-            )
+            h3(msg),
+            uiOutput("game")
         )
       })
 
@@ -96,20 +97,42 @@ petanqueServer <- function(input, output, session) {
   ## update game field on each turn
   observeEvent(chosenDistr(), {
         picked <- chosenDistr()
-        if (!is.null(picked)) {
-          browser()
-          for (iStep in 1:7) {
-            invalidateLater(500, session)
-            
-            svgStr <- svgDevice()
-            posDF <- throwBall(distribution = picked[["type"]], param1 = picked[["param1"]], 
-                param2 = picked[["param2"]], posDF = gameData(), step = iStep) 
-            dev.off()
-            gamePlot(svgStr())
-          }
-          gameData(posDF)
-        }
+        # sample distance
+        distance(
+            distanceFromDistribution(
+                distribution = picked[["type"]],
+                param1 = picked[["param1"]],
+                param2 = picked[["param2"]]
+            )
+        )
+        # start animation
+        step(1)
       })
+
+  # animation
+  observe({
+        invalidateLater(500, session)
+        isolate({
+              req(step() < STEP_MAX, distance())
+              curStep <- step()
+              
+              # update (redraw) plot
+              svgStr <- svgDevice()
+              # FIXME: not ideal passing distribution and params again?..
+              posDF <- throwBall(distance = distance(), distribution = chosenDistr()[["type"]],
+                  param1 = chosenDistr()[["param1"]], param2 = chosenDistr()[["param2"]],
+                  posDF = gameData(), step = curStep)
+              dev.off()
+              gamePlot(svgStr())
+
+              # update data frame
+              if (curStep == 7)
+                gameData(posDF)
+              
+              step(curStep + 1)
+            })
+      })
+  
   output$game <- renderUI({ HTML(gamePlot()) })
   
   gameActive <- reactiveVal(FALSE)
@@ -121,7 +144,11 @@ petanqueServer <- function(input, output, session) {
   activePlayer <- reactiveVal(NULL)  ## index of active player (1 or 2)
   turnNumber <- reactiveVal(NULL)
   MAX_TURNS <- 6
+  STEP_MAX <- 8  # animation steps
   
+  step <- reactiveVal(STEP_MAX)
+  distance <- reactiveVal(NULL)
+    
   distrChoices <- reactiveVal(NULL)
   activeDistr <- reactiveVal(1)
   chosenDistr <- reactiveVal(NULL)
