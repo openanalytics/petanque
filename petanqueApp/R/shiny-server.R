@@ -97,12 +97,16 @@ petanqueServer <- function(input, output, session) {
   observeEvent(chosenDistr(), {
         picked <- chosenDistr()
         if (!is.null(picked)) {
-          
-          svgStr <- svgDevice()
-          posDF <- throwBall(distribution = picked[["type"]],
-              param1 = picked[["param1"]], param2 = picked[["param2"]], gameData()) 
-          dev.off()
-          gamePlot(svgStr())          
+          browser()
+          for (iStep in 1:7) {
+            invalidateLater(500, session)
+            
+            svgStr <- svgDevice()
+            posDF <- throwBall(distribution = picked[["type"]], param1 = picked[["param1"]], 
+                param2 = picked[["param2"]], posDF = gameData(), step = iStep) 
+            dev.off()
+            gamePlot(svgStr())
+          }
           gameData(posDF)
         }
       })

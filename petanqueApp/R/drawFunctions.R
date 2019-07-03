@@ -84,12 +84,15 @@ drawHuman <- function(color = "orange") {
 		
 }
 
-animateThrow <- function(distance, color) {
-	
-	points(x = 1.2 * distance / 5, y = 0.4, cex = 1, pch = 19, col = color); Sys.sleep(0.5)
-	points(x = 2.2 * distance / 5, y = 0.65, cex = 1.5, pch = 19, col = color); Sys.sleep(0.5)
-	points(x = 3.5 * distance / 5, y = 0.6, cex = 2, pch = 19, col = color); Sys.sleep(0.5)
-	points(x = 4.3 * distance / 5, y = 0.4, cex = 2.5, pch = 19, col = color); Sys.sleep(0.5)
+animateThrow <- function(distance, color, step = 0) {
+	if (step <= 1)
+    points(x = 1.2 * distance / 5, y = 0.4, cex = 1, pch = 19, col = color)
+  if (step <= 2)
+    points(x = 2.2 * distance / 5, y = 0.65, cex = 1.5, pch = 19, col = color)
+  if (step <= 3)
+    points(x = 3.5 * distance / 5, y = 0.6, cex = 2, pch = 19, col = color)
+  if (step <= 4)
+    points(x = 4.3 * distance / 5, y = 0.4, cex = 2.5, pch = 19, col = color)
 	# points(x = distance, y = 0, cex = 3, pch = 19, col = color); Sys.sleep(1/30)
 	
 	# then wipe it
