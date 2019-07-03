@@ -5,7 +5,7 @@
 
 # size petanque field: 4 * 15m in length
 mPetanque <- 0.680 # standards: 680 et 710 grammes
-mTarget <- 0.015 # between 10 and 18 gramms
+mTarget <- 0.34 # between 10 and 18 gramms
 # from: https://www.petanqueshop.com/le-choix-d-une-boule-de-competition
 radiusPetanque <- 0.075 # official competition: between 70,5 et 80 mm
 radiusTarget <- 0.030 # 30 diameter +- 1mm
@@ -21,5 +21,5 @@ dataPetanque <- data.frame(
 		m = c(mPetanque, mPetanque, mPetanque, mTarget)
 )
 
-collisionPetanque(data = dataPetanque, throwBallID = 1, throwBallV = v)
+collisionPetanque(data = dataPetanque, throwBallID = 1, throwBallV = v, a = 20)
 
