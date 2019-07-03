@@ -31,26 +31,30 @@ petanqueUI <- function(debug = FALSE) {
         actionLink(inputId = "debug_console", label = "Connect with console"),
       
       # keyboard inputs
+      # here we prevent key presses when modal is shown
       tags$script('
               $(document).on("keydown", function (e) {
-              switch (e.which) {
-              case 40: // down
-                Shiny.onInputChange("down", Math.random(1));
-                break;
-              case 38: // up
-                Shiny.onInputChange("up", Math.random(1));
-                break;
-              case 13: // enter
-                Shiny.onInputChange("enter", Math.random(1));
-                break;
-              }});
+   						  if (!document.getElementById("shiny-modal")) {
+                  switch (e.which) {
+                    case 40: // down
+                      Shiny.onInputChange("down", Math.random(1));
+                      break;
+                    case 38: // up
+                      Shiny.onInputChange("up", Math.random(1));
+                      break;
+                    case 13: // enter
+                      Shiny.onInputChange("enter", Math.random(1));
+                      break;
+                  }
+                }
+              });
               '), 
       
       includeCSS(system.file("resources", "custom.css", package = "petanqueApp")),      
       
       # title panel
       oaTitlePanel(appName = "Petanque Shiny App", pkgName = "petanqueApp",
-          logo = system.file("resources", "logo.png", package = "petanqueApp"),
+          logo = system.file("resources", "logo_text.png", package = "petanqueApp"),
           version = FALSE
       ),
       
@@ -66,3 +70,35 @@ petanqueUI <- function(debug = FALSE) {
   
   )
 }
+
+playerInfoModal <- function(failed1 = FALSE, failed2 = FALSE, failedBoth = FALSE) {
+  allPlayers <- getPlayers()
+  
+  selectizeOpts <- list(placeholder = "please choose or enter new", create = TRUE,
+      onInitialize = I('function() { this.setValue(""); }'))
+  
+  modalDialog(title = "Players", 
+      
+      if (failedBoth)
+        span("Please choose two different names", class = "warn"),
+      
+      if (failed1)
+        span("Invalid player 1 name", class = "warn"),
+      
+      selectizeInput("player1", "Player 1:", choices = allPlayers, 
+          multiple = FALSE, options = selectizeOpts),
+      
+      if (failed2)
+        span("Invalid player 2 name", class = "warn"),
+      
+      selectizeInput("player2", "Player 2:", choices = allPlayers, 
+          multiple = FALSE, options = selectizeOpts),
+      
+      footer = tagList(
+          modalButton("Cancel"),
+          actionButton("confirmPlayers", "Start!")
+      ), 
+      size = "m", 
+      easyClose = FALSE)
+}
+

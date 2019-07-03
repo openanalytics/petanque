@@ -15,11 +15,6 @@ h1, h2, h3, h4 {
 }
 
 /* formatting for the title panel */
-img.logo {
-	height: 50px; 
-	margin: 20px;
-}
-
 span.version {
   float: right; 
   font-family: Cantarell;
@@ -47,6 +42,18 @@ div#shiny-disconnected-overlay:before {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
+}
+
+div.logo-div {
+	text-align:center;
+  font-size: 150%;
+}
+
+img.logo {
+  float: right;
+  height: 50px; 
+  margin: 20px;
+  padding-right: 50px;
 }
 
 

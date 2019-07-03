@@ -1,3 +1,4 @@
+#' @importFrom DT datatable dataTableOutput renderDataTable
 petanqueServer <- function(input, output, session) {
   
   # debugging
@@ -7,28 +8,36 @@ petanqueServer <- function(input, output, session) {
       updateTabsetPanel(session, "main-tabs", selected = "Rankings"))
   
   output$gameUI <- renderUI({
-        h1("Game on!")
-        
-        
-        fluidRow(
-            uiOutput("message"),
-            h2("Distributions"),
-            column(4, uiOutput("distributuionList")),
-            column(8, uiOutput("gameArea"))
+        tagList(
+            uiOutput("message"),        
+            if (gameActive() || gameEnded()) 
+              fluidRow(
+                  h2("Distributions"),
+                  column(4, uiOutput("distributuionList")),
+                  column(8, uiOutput("gameArea"))
+              )
         )
         
       })
   
   output$rankingsUI <- renderUI({
         h1("Rankings")
+        DT::dataTableOutput("rankingTable")
+      })
+  
+  output$rankingTable <- DT::renderDataTable({
+        # TODO
+        ranking <- getRanking()
+        DT::datatable(ranking, rownames = TRUE)
       })
   
   output$message <- renderUI({
         h2(
             span(if (gameEnded()) "Game finished!"),
             span(if (!gameActive()) "Press \"Start\" to start the game!" else "Game is in progress!"),
+            span(if (!is.null(players())) "Playing:", paste(players(), collapse = " and ")),
             span(if (!is.null(turnNumber())) paste("Turn Number:", turnNumber())),
-            span(if (!is.null(activePlayer())) paste("Current player:", activePlayer()))
+            span(if (!is.null(activePlayer())) paste("Current player:", players()[[activePlayer()]]))
         )
       })
   
@@ -50,18 +59,23 @@ petanqueServer <- function(input, output, session) {
         
         tagList(
             if (gameEnded()) {
-              span(paste0("Game finished with Player ", winner(), " winning with ", score(), " points."),
-                  actionLink("gotoRankings", "See Rankings."), 
-              )
-            } else {
-              paste("Player", 3-activePlayer(), "chose", chosenDistr())
-            },
+                  span(
+                      paste0("Game finished with Player ", winner(), "(", players()[[winner()]], ") winning with ", score(), " points."),
+                      actionLink("gotoRankings", "See Rankings.") 
+                  )
+                } else {
+                  paste("Player", 3-activePlayer(), "chose", chosenDistr())
+                },
             plotOutput("pdf")
         )
       })
   
   output$pdf <- renderPlot({
         req(chosenDistr())
+        
+        ## TODO: here we need to show the actual game area + animation etc
+        
+        # placeholder histogram:
         n <- 1000
         dat <- switch(chosenDistr(),
             "normal(4, 3)" = rnorm(n, 4, 3), 
@@ -74,10 +88,12 @@ petanqueServer <- function(input, output, session) {
         hist(dat, xlim = c(0, 10), freq = FALSE)
         # target
         points(x = targetLoc(), y = 0, pch = 20, col = "red")
+        
       })
   
   gameActive <- reactiveVal(FALSE)
   gameEnded <- reactiveVal(FALSE)
+  players <- reactiveVal(NULL)
   activePlayer <- reactiveVal(NULL)
   turnNumber <- reactiveVal(NULL)
   MAX_TURNS <- 6
@@ -95,24 +111,18 @@ petanqueServer <- function(input, output, session) {
         length(distrChoices())
       })
   
-  # inputs
+# inputs
   observeEvent(input$enter, {
         if (!gameActive()) {
-          # just started the game
-          gameEnded(FALSE)  
-          gameActive(TRUE)
-          # sample the target
-          targetLoc(runif(1, 3, 9))
-          # Set active player
-          activePlayer(1)
-          # Set turn
-          turnNumber(1)
-          # Sample distribution
-          distrChoices(sampleDistribution())
+          ## just started the game
+          # ask for player names
+          showModal(playerInfoModal())
+          # further logic is called only after confirmation of names 
         } else {
-          # have chosen a distribution   
-          # TODO: make a throw
+          ## have chosen a distribution   
+          # TODO: show a throw
           chosenDistr(distrChoices()[[activeDistr()]])
+          
           ## Switch player:
           # change the player
           curPlayer <- activePlayer()
@@ -132,7 +142,7 @@ petanqueServer <- function(input, output, session) {
             score(sample(1:3, 1))
             winner(sample(1:2, 1))
             # TODO: update and show ranking
-            #updateRanking()
+            updateRanking(players(), winner(), score())
             # TODO: prepare for new game
             gameActive(FALSE)
           } else {
@@ -157,9 +167,43 @@ petanqueServer <- function(input, output, session) {
         }
       })
   
-}
-
-sampleDistribution <- function() {
-  # TODO: distr selection
-  sample(c("normal(4, 3)", "normal(5, 2)", "poisson(6)", "poisson(8)", "gamma(6, 2)", "gamma(5, 1)"), size = 3, replace = FALSE)
+  observeEvent(input$confirmPlayers, {
+        if (nchar(input$player1) == 0) {
+          showModal(playerInfoModal(failed1 = TRUE))
+        } else if (nchar(input$player2) == 0) {
+          showModal(playerInfoModal(failed2 = TRUE))
+        } else if (input$player1 == input$player2) {
+          showModal(playerInfoModal(failedBoth = TRUE))
+        } else {
+          removeModal()
+          
+          playerNames <- c(input$player1, input$player2)
+          # save names in the DB
+          oldPlayers <- getPlayers()
+          if (!all(playerNames %in% oldPlayers))
+            addPlayers(playerNames)
+          
+          # start game
+          startNewGame(playerNames)
+          
+        }
+      })
+  
+  startNewGame <- function(playerNames) {
+    # start game
+    players(NULL)
+    gameEnded(FALSE)
+    gameActive(TRUE)
+    # use names for the game
+    players(playerNames)
+    # sample the target
+    targetLoc(sampleTarget())
+    # Set active player
+    activePlayer(1)
+    # Set turn
+    turnNumber(1)
+    # Sample distribution
+    distrChoices(sampleDistribution())
+  }
+  
 }
