@@ -108,3 +108,7 @@ div.rankings {
 	max-width: 50%;
 	margin: 0 auto;
 }
+
+.controls {
+	text-align: center;
+}
