@@ -61,6 +61,10 @@ petanqueUI <- function(debug = FALSE) {
                     case 13: // enter
                       Shiny.onInputChange("enter", Math.random(1));
                       break;
+                    case 32: // space
+                      Shiny.onInputChange("enter", Math.random(1));
+                      break;
+
                   }
                 }
               });
@@ -87,7 +91,7 @@ petanqueUI <- function(debug = FALSE) {
       fluidRow(
           column(12, 
               div(class = "controls",  
-                  strong("Controls:"), "Use up/down arrows to choose distribution, 'Enter' to start/select, left/right arrows to switch between Game and Rankings")
+                  strong("Controls:"), "Use up/down arrows to choose distribution, 'Enter' or 'Space' to start/select, left/right arrows to switch between Game and Rankings")
           )
       )
   
