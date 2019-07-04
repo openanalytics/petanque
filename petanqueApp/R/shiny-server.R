@@ -101,7 +101,8 @@ petanqueServer <- function(input, output, session) {
               span(class = paste0("player", winner()), players()[[winner()]]), 
               " has won with ", score(), paste0(" point", if (score() > 1) "s." else "."))
           msg <- tagList(msg, actionLink("gotoRankings", "See Rankings."), br(), 
-              "Press", actionLink("enter", "Start"), "to start a new game!") 
+              "Press", actionLink("enter", "Start"), "to start a new game!")
+          playSound("win")
         } else {
           if (!gameActive() && step() == STEP_MAX) {
             msg <- tagList("Press", actionLink("enter", "Start"), "to start a new game!") 
@@ -186,6 +187,8 @@ petanqueServer <- function(input, output, session) {
               gamePlot(svgStr())
 
               # update data frame
+              if (curStep == STEP_MAX-2)
+                playSound("hit")
               if (curStep == STEP_MAX-1)
                 gameData(posDF)
               
