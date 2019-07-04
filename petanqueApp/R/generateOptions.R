@@ -61,7 +61,7 @@ generateOptions <- function(posDF = NULL, n = 3) {
 			param2 <- NA
 			
 			if(i == juiced)
-				param1 <- round(1 / targetLoc, 1)
+				param1 <- round(1 / (1 + targetLoc), 1)
 		}
 		
 		if(type[i] == "degenerate") {
