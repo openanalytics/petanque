@@ -84,6 +84,12 @@ petanqueUI <- function(debug = FALSE) {
           tabPanel("Rankings",
               uiOutput("rankingsUI", class = "rankings")
           )
+      ),
+      fluidRow(
+          column(8, offset = 2, 
+              span(class = "controls",  
+                  strong("Controls:"), "Use up/down arrows to choose distribution, 'Enter' to start/select, left/right arrows to switch between Game and Rankings")
+          )
       )
   
   )
