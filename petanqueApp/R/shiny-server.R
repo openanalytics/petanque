@@ -51,7 +51,7 @@ petanqueServer <- function(input, output, session) {
   
   output$gameUI <- renderUI({
         tagList(
-            uiOutput("message", style = "min-height: 120px;"),  # FIXME        
+            uiOutput("message", class = "message"),        
             if (gameActive() || gameEnded()) 
               fluidRow(
                   column(3, 
@@ -67,15 +67,18 @@ petanqueServer <- function(input, output, session) {
       })
   
   output$rankingsUI <- renderUI({
-        h1("Rankings")
-        DT::dataTableOutput("rankingTable")
+        tagList(
+            h2("Ranking"),
+            DT::dataTableOutput("rankingTable")
+        )
       })
 
   # file is checked every second FIXME?
   rankingsData <- reactiveFileReader(1000, session, RANKING_FILE, printRankings)
     
   output$rankingTable <- DT::renderDataTable({
-        dt <- datatable(rankingsData(), rownames = FALSE, class = "hover")
+        dt <- datatable(rankingsData(), rownames = FALSE, class = "hover",
+            options = list(paging = FALSE))
         if (!is.null(players()))
           dt <- formatStyle(dt,
               columns = "player",  target = "row",
@@ -230,6 +233,24 @@ petanqueServer <- function(input, output, session) {
           curDistr <- activeDistr()
           newDistr <- if (curDistr == nDistr()) 1 else curDistr+1
           activeDistr(newDistr)
+        }
+      })
+  
+  # switch between game and rankings
+  observeEvent(input$right, {
+        curTab <- input[["main-tabs"]]
+        if (curTab == "Game") {
+          updateTabsetPanel(session, "main-tabs", selected = "Rankings")
+        } else if (curTab == "Rankings") {
+          updateTabsetPanel(session, "main-tabs", selected = "Game")
+        }
+      })
+  observeEvent(input$left, {
+        curTab <- input[["main-tabs"]]
+        if (curTab == "Game") {
+          updateTabsetPanel(session, "main-tabs", selected = "Rankings")
+        } else if (curTab == "Rankings") {
+          updateTabsetPanel(session, "main-tabs", selected = "Game")
         }
       })
   

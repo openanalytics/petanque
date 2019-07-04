@@ -53,6 +53,12 @@ petanqueUI <- function(debug = FALSE) {
                     case 38: // up
                       Shiny.onInputChange("up", Math.random(1));
                       break;
+                    case 37: // left
+                      Shiny.onInputChange("left", Math.random(1));
+                      break;
+                    case 39: // right
+                      Shiny.onInputChange("right", Math.random(1));
+                      break;
                     case 13: // enter
                       Shiny.onInputChange("enter", Math.random(1));
                       break;
@@ -76,7 +82,7 @@ petanqueUI <- function(debug = FALSE) {
               uiOutput("gameUI")
           ),
           tabPanel("Rankings",
-              uiOutput("rankingsUI")
+              uiOutput("rankingsUI", class = "rankings")
           )
       )
   
