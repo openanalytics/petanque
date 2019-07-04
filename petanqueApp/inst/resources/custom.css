@@ -28,6 +28,11 @@ span.version {
   color: red;	
 }
 
+a {
+	color: #32a6d3;
+	text-decoration: none;
+}
+
 /* Show a message when session is disconnected */
 div#shiny-disconnected-overlay {
   opacity: 0.75;
@@ -44,20 +49,23 @@ div#shiny-disconnected-overlay:before {
   transform: translateY(-50%);
 }
 
-div.logo-div {
-	text-align:center;
+div.logo-div h1 {
+	text-align: center;
   font-size: 150%;
+  padding: 30px;
 }
 
 img.logo {
-  float: right;
+  position: absolute; 
+  right: 0;
   height: 60px; 
   margin: 10px 20px;
   padding-right: 50px;
 }
 
 img.logo2 {
-  float: left;
+  position: absolute; 
+  left: 0;
   height: 80px; 
   margin: 0 20px;
   padding-left: 50px;
@@ -75,14 +83,15 @@ div.distr {
   color: black;
   padding: 16px;
   margin: 8px;
-  border: 2px solid black;
+  border: 2px solid #e6e6e6;
   border-radius: 4px;
   text-align: center;
 }
 
 div.selected {
-	color: green;
-  border: 2px solid green;
+	color: #32a6d3;
+	background-color: #f6f6f6;
+  border: 2px solid #32a6d3;
   border-radius: 4px;
 }
 
@@ -97,6 +106,7 @@ div.selected {
 /* we do not show tabs */
 ul#main-tabs {
 	visibility: hidden;
+	display: none;
 }
 
 div.message {

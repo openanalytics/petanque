@@ -16,10 +16,10 @@ generateNegativeMessage <- function() {
 generatePositiveMessage <- function(distance) {
 	if(distance < 15)
 		messages <- c("Your ball hit a tree!", 
-				"Your hit a bus!", 
+				"Your ball hit a bus!", 
 				"Your ball (nearly) hit a cat! Please sample more safely.", 
 				"This is petanque, not shot put.",
-				"'Check out these muscles'!",
+				"Check out these muscles!",
 				"You're an outlier!", 
 				"Merde!", "Non!")
 	if(distance > 15)

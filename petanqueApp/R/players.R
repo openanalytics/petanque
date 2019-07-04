@@ -7,7 +7,7 @@ getPlayers <- function(file = PLAYER_FILE) {
     out <- readRDS(file)
   else 
     out <- c()
-  out
+  sort(out) # sort by name
 }
 
 #' Add new players to the saved list

@@ -21,13 +21,12 @@ oaTitlePanel <- function(appName, pkgName, logo, logo2 = NULL, version = TRUE) {
                 )
             ),
           
-          div(
+          div(class = "logo-div",
               if (!is.null(logo2) && file.exists(logo2))
                 img(src = file.path("logo", basename(logo2)), class = "logo2"),
-              appName,
               if (file.exists(logo))
                 img(src = file.path("logo", basename(logo)), class = "logo"),
-              class = "logo-div"
+              h1(appName)
           )
       )
   )
@@ -86,8 +85,8 @@ petanqueUI <- function(debug = FALSE) {
           )
       ),
       fluidRow(
-          column(8, offset = 2, 
-              span(class = "controls",  
+          column(12, 
+              div(class = "controls",  
                   strong("Controls:"), "Use up/down arrows to choose distribution, 'Enter' to start/select, left/right arrows to switch between Game and Rankings")
           )
       )
