@@ -17,6 +17,7 @@ petanqueServer <- function(input, output, session) {
   gamePlot <- reactiveVal(NULL)  		## svg string with plot
   
   players <- reactiveVal(NULL)      ## vector of names
+  rankings <- reactiveVal(NULL)
   activePlayer <- reactiveVal(NULL) ## index of active player (1 or 2)
   turnNumber <- reactiveVal(NULL)
   
@@ -50,7 +51,7 @@ petanqueServer <- function(input, output, session) {
   
   output$gameUI <- renderUI({
         tagList(
-            uiOutput("message"),        
+            uiOutput("message", style = "min-height: 120px;"),  # FIXME        
             if (gameActive() || gameEnded()) 
               fluidRow(
                   column(3, 
@@ -69,11 +70,12 @@ petanqueServer <- function(input, output, session) {
         h1("Rankings")
         DT::dataTableOutput("rankingTable")
       })
-  
+
+  # file is checked every second FIXME?
+  rankingsData <- reactiveFileReader(1000, session, RANKING_FILE, printRankings)
+    
   output$rankingTable <- DT::renderDataTable({
-        # TODO
-        ranking <- getRanking()
-        DT::datatable(ranking, rownames = TRUE)
+        DT::datatable(rankingsData(), rownames = FALSE)
       })
   
   output$message <- renderUI({
@@ -92,10 +94,12 @@ petanqueServer <- function(input, output, session) {
           }
           if (!is.null(players())) 
             msg <- tagList(msg, br(), 
-                "Playing:", span(players()[[1]], class = "player1"), "and", span(players()[[2]], class = "player2"))
-          if (!is.null(turnNumber())) 
+                "Playing:", 
+                span(sprintf("%s (%s)", players()[[1]], rankings()[[1]]), class = "player1"), "and", 
+                span(sprintf("%s (%s)", players()[[2]], rankings()[[2]]), class = "player2"))
+          if (!is.null(turnNumber()) && step() == STEP_MAX) 
             msg <- tagList(msg, br(), "Turn Number:", turnNumber())
-          if (!is.null(activePlayer())) 
+          if (!is.null(activePlayer()) && step() == STEP_MAX) 
             msg <- tagList(msg, "Current player:", 
                 span(class = paste0("player", activePlayer()), players()[[activePlayer()]]))
         }
@@ -264,6 +268,8 @@ petanqueServer <- function(input, output, session) {
     
     # use names in the game
     players(playerNames)
+    # get their rankings
+    rankings(c(getRanking(playerNames[1])$rating, getRanking(playerNames[2])$rating))
     # Set active player
     activePlayer(1)
     # Set turn

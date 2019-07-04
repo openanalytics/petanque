@@ -1,4 +1,4 @@
-#RANKING_FILE <- "/tmp/petanque-ranking.rds
+RANKING_FILE <- "/tmp/petanque-ranking.rds"
 #players <- c('Maxim','Marijke')
 #winner <- 1
 #' Update ranking based on the result of the game
@@ -8,14 +8,17 @@
 #' @param file Path to the RDS file with saved ranking
 updateRanking <- function(players, winner, score, file = RANKING_FILE) {
     
-  if (file.exists(file)){
+  if (file.exists(file)) {
       rankingDB <- readRDS(file)
-  }
-  else{
+  } else {
       rankingDB <- data.frame('player'= players, 'rating' = rep(750,2),  'gamesPlayed' = rep(0,2), 'nSuccessiveWins' = rep(0,2), 'nSuccessiveLosses' = rep(0,2), type = 'unranked',stringsAsFactors=FALSE) 
-      save(rankingDB, file = RANKING_FILE) 
+      saveRDS(rankingDB, file = file) 
   }
-  
+  if (length(missingPlayers <- setdiff(players, rankingDB$player))) { # add player(s) that don't have ranking
+    rankingDB <- rbind(rankingDB, 
+        data.frame('player' = missingPlayers, 'rating' = 750,  'gamesPlayed' = 0, 'nSuccessiveWins' = 0, 'nSuccessiveLosses' = 0, type = 'unranked', stringsAsFactors = FALSE)
+    )
+  }
   
   # step 1) get previous ranking / initialize ranking
   oldRanks <- lapply(players, function(p) getRanking(player = p, rankingDB = rankingDB))
@@ -104,7 +107,7 @@ updateRanking <- function(players, winner, score, file = RANKING_FILE) {
     newRanks$type <- 'ranked'
     
     rankingDB[which(rankingDB$player%in%players),] <- newRanks[,-c(which(colnames(newRanks)=='effectiveGames'))]
-    save(rankingDB, file = RANKING_FILE) 
+    saveRDS(rankingDB, file = RANKING_FILE) 
     
     
    #TODO The maximum rating change in a match is 50 points;  
@@ -121,15 +124,18 @@ updateRanking <- function(players, winner, score, file = RANKING_FILE) {
 #' Get the current ranking of a player or initialize a player's ranking
 #' @param players Player's name
 #' @param rankingDB The current ranking database
-getRanking <- function(player, rankingDB) {
+getRanking <- function(player, rankingDB = NULL, file = RANKING_FILE) {
 
+    if (is.null(rankingDB) && file.exists(file))
+      rankingDB <- readRDS(file)
+  
     if(player %in% rankingDB$player){
-            oldRankingPlayer <- rankingDB[which(rankingDB==player),]           
+            oldRankingPlayer <- rankingDB[which(rankingDB$player==player),]           
     }
     else{
         oldRankingPlayer <- data.frame('player'= player, 'rating' = 750,  'gamesPlayed' = 0, 'nSuccessiveWins' = 0, 'nSuccessiveLosses' = 0, 'type' = 'unranked',stringsAsFactors=FALSE)   
         rankingDB <- rbind(rankingDB,oldRankingPlayer)
-        save(rankingDB, file = RANKING_FILE)
+        saveRDS(rankingDB, file = file)
     }   
     
     return(oldRankingPlayer)
@@ -137,7 +143,7 @@ getRanking <- function(player, rankingDB) {
 
 #' Get the number of effective games played by a player
 #' @param oldRanking Current ranking of a player
-#' @param rankingDB Number of games played
+#' @param gamesPlayed Number of games played
 getEffectiveNrGames <-function(oldRanking,gamesPlayed){
     
     if(oldRanking < 2355){
@@ -298,7 +304,7 @@ specialRanking <- function(infoPlayer1, ratingPlayer2, score){
 }
 
 
-#' Standard rating algorithm for players wih more than 8 games
+#' Standard rating algorithm for players with more than 8 games
 #' @param infoPlayer1 information of player 1
 #' @param ratingPlayer2 The rating of player 2
 #' @param score Scored obtained by the player
@@ -317,3 +323,29 @@ standardRanking <- function(infoPlayer1, ratingPlayer2, score){
 }
 
 
+printRankings <- function(file = RANKING_FILE) {
+  if (!file.exists(file)) {
+    return(NULL)
+  } else { 
+    rankingDB <- readRDS(file)
+  }
+  
+  out <- rankingDB[order(rankingDB$rating, decreasing = TRUE), ]
+  out <- cbind(rank = rank(-out$rating, ties.method = "min"), out)  # note hack using negative rating
+
+  out
+  
+}
+
+# for dev purposes
+# note that file is saved as backup
+resetRanking <- function(file = RANKING_FILE) {
+  inc <- 0
+  while (file.exists(file.path(dirname(file), paste0(basename(file), inc))))
+    inc <- inc+1
+
+  backupFile <- file.path(dirname(file), paste0(basename(file), inc))
+  
+  file.copy(file, to = backupFile)
+  file.remove(file)
+}
