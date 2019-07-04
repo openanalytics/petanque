@@ -9,7 +9,7 @@ updateRanking(players, winner, score, file = RANKING_FILE)
 \arguments{
 \item{players}{Player names (character vector of length 2)}
 
-\item{winner}{Winning player's number 1 or 2}
+\item{winner}{Winning player's number 1 or 2 or 0 (tie)}
 
 \item{score}{Score}
 

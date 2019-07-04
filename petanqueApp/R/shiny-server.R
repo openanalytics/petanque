@@ -1,6 +1,6 @@
 ## TODO: 
 ## - improve layout
-
+#' @importFrom DT datatable formatStyle styleEqual
 petanqueServer <- function(input, output, session) {
   
   ## debugging
@@ -75,7 +75,14 @@ petanqueServer <- function(input, output, session) {
   rankingsData <- reactiveFileReader(1000, session, RANKING_FILE, printRankings)
     
   output$rankingTable <- DT::renderDataTable({
-        DT::datatable(rankingsData(), rownames = FALSE)
+        dt <- datatable(rankingsData(), rownames = FALSE, class = "hover")
+        if (!is.null(players()))
+          dt <- formatStyle(dt,
+              columns = "player",  target = "row",
+              fontWeight = styleEqual(players(), values = rep("bold", length(players())), default = "normal"),
+              color = styleEqual(players(), values = rep("#e52323", length(players())), default = "black")
+          )
+        dt
       })
   
   output$message <- renderUI({
