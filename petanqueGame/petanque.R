@@ -70,13 +70,13 @@ posDF <- newGame()
 #	return(posDF)
 #}
 
-options <- generateOptions()
+options <- generateOptions(posDF)
 printOptions(options)
 
 
-posDF <- pickOption(options, optionSelected = 1, posDF); options <- generateOptions(); printOptions(options)
-posDF <- pickOption(options, optionSelected = 2, posDF); options <- generateOptions(); printOptions(options)
-posDF <- pickOption(options, optionSelected = 3, posDF); options <- generateOptions(); printOptions(options)
+posDF <- pickOption(options, optionSelected = 1, posDF); options <- generateOptions(posDF); printOptions(options)
+posDF <- pickOption(options, optionSelected = 2, posDF); options <- generateOptions(posDF); printOptions(options)
+posDF <- pickOption(options, optionSelected = 3, posDF); options <- generateOptions(posDF); printOptions(options)
 
 # throw all the balls
 #posDF <- throwBall(distribution = "normal", param1 = 5, param2 = 1.5, posDF); Sys.sleep(2)
