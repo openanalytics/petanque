@@ -29,6 +29,8 @@ petanqueServer <- function(input, output, session) {
   activeDistr <- reactiveVal(1)			
   chosenDistr <- reactiveVal(NULL)	
 
+  refreshRankingsFile <- reactiveVal(0)
+  
   ## helper reactives
   nDistr <- reactive({
         req(distrChoices())
@@ -73,9 +75,13 @@ petanqueServer <- function(input, output, session) {
         )
       })
 
-  # file is checked every second FIXME?
-  rankingsData <- reactiveFileReader(1000, session, RANKING_FILE, printRankings)
-    
+  # FIXME: file is checked every second, is there a better solution?
+#  rankingsData <- reactiveFileReader(1000, session, RANKING_FILE, printRankings)
+  rankingsData <- reactive({
+        refreshRankingsFile() # to re-run this after ratings update
+        printRankings()
+      })
+
   output$rankingTable <- DT::renderDataTable({
         dt <- datatable(rankingsData(), rownames = FALSE, class = "hover",
             options = list(paging = FALSE))
@@ -204,8 +210,10 @@ petanqueServer <- function(input, output, session) {
           # increase turn
           nextTurn <- turnNumber() + 1
           if (nextTurn > MAX_TURNS) {
-            # TODO: update and show ranking
+            # update and show ranking
             updateRanking(players(), winner(), score())
+            # trigger file re-reading
+            refreshRankingsFile(runif(1))
             # end game
             gameEnded(TRUE)
             gameActive(FALSE)
