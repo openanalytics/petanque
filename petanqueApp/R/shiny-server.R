@@ -219,7 +219,7 @@ petanqueServer <- function(input, output, session) {
             gameActive(FALSE)
           } else {
             # resample distributions # TODO check that this is working with posDF input
-            distrChoices(generateOptions(posDF))
+            distrChoices(generateOptions(gameData()))
             # reset distr selection to the 1st
             activeDistr(1)
             # set next turn
