@@ -86,8 +86,8 @@ petanqueUI <- function(debug = FALSE) {
           )
       ),
       fluidRow(
-          column(8, offset = 2, 
-              span(class = "controls",  
+          column(12, 
+              div(class = "controls",  
                   strong("Controls:"), "Use up/down arrows to choose distribution, 'Enter' to start/select, left/right arrows to switch between Game and Rankings")
           )
       )
