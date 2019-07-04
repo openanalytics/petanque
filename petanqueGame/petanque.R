@@ -9,8 +9,59 @@
 #source("newGame.R")
 #source("messages.R")
 
+# setwd("C:/Users/Jason/git/petanque/petanqueApp/"); pkgload::load_all()
 pkgload::load_all("../petanqueApp/")
 posDF <- newGame()
+
+
+
+Sys.sleep(5)
+posDF$x[1] <- 5
+posDF <- throwBall(distribution = "degenerate", param1 = 5.4, param2 = NA, posDF);
+posDF <- throwBall(distribution = "degenerate", param1 = 8.5, param2 = NA, posDF);
+posDF <- throwBall(distribution = "degenerate", param1 = 10, param2 = NA, posDF);
+posDF <- throwBall(distribution = "degenerate", param1 = 5.2, param2 = NA, posDF);
+
+distribution = "degenerate"; param1 <- 5.5; param2 <- NA
+
+options <- generateOptions(posDF)
+printOptions(options)
+
+posDF <- pickOption(options, optionSelected = 1, posDF); options <- generateOptions(posDF); printOptions(options)
+posDF <- pickOption(options, optionSelected = 2, posDF); options <- generateOptions(posDF); printOptions(options)
+posDF <- pickOption(options, optionSelected = 3, posDF); options <- generateOptions(posDF); printOptions(options)
+
+# throw all the balls
+#posDF <- throwBall(distribution = "normal", param1 = 5, param2 = 1.5, posDF); Sys.sleep(2)
+#posDF <- throwBall(distribution = "normal", param1 = 11, param2 = 1, posDF); Sys.sleep(2)
+#posDF <- throwBall(distribution = "normal", param1 = 7, param2 = 2, posDF); Sys.sleep(2)
+#posDF <- throwBall(distribution = "normal", param1 = 5, param2 = 1, posDF); Sys.sleep(2)
+#posDF <- throwBall(distribution = "normal", param1 = 4.5, param2 = 3, posDF); Sys.sleep(2)
+#posDF <- throwBall(distribution = "normal", param1 = 5, param2 = 1.5, posDF); Sys.sleep(2)
+
+determineOutcome(posDF)
+posDF <- newGame()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -57,8 +108,8 @@ posDF <- newGame()
 #		msg <- generatePositiveMessage(distance)
 #		text(msg, x = 5, y = -0.4, font = 2, col = oaColors(posDF$color[i]))
 #	}
-#		
-#
+#	
+#	
 #	posDF$thrown[i] <- TRUE
 #	posDF$x[i] <- distance
 #	
@@ -66,37 +117,9 @@ posDF <- newGame()
 #	if(i < 7) {
 #		drawHuman(color = posDF$color[i+1]); Sys.sleep(1)
 #	}
-#		
+#	
 #	return(posDF)
 #}
-
-options <- generateOptions(posDF)
-printOptions(options)
-
-
-posDF <- pickOption(options, optionSelected = 1, posDF); options <- generateOptions(posDF); printOptions(options)
-posDF <- pickOption(options, optionSelected = 2, posDF); options <- generateOptions(posDF); printOptions(options)
-posDF <- pickOption(options, optionSelected = 3, posDF); options <- generateOptions(posDF); printOptions(options)
-
-# throw all the balls
-#posDF <- throwBall(distribution = "normal", param1 = 5, param2 = 1.5, posDF); Sys.sleep(2)
-#posDF <- throwBall(distribution = "normal", param1 = 11, param2 = 1, posDF); Sys.sleep(2)
-#posDF <- throwBall(distribution = "normal", param1 = 7, param2 = 2, posDF); Sys.sleep(2)
-#posDF <- throwBall(distribution = "normal", param1 = 5, param2 = 1, posDF); Sys.sleep(2)
-#posDF <- throwBall(distribution = "normal", param1 = 4.5, param2 = 3, posDF); Sys.sleep(2)
-#posDF <- throwBall(distribution = "normal", param1 = 5, param2 = 1.5, posDF); Sys.sleep(2)
-
-determineOutcome(posDF)
-posDF <- newGame()
-
-
-
-
-
-
-
-
-
 
 
 

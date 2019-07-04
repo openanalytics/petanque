@@ -83,6 +83,9 @@ generateOptions <- function(posDF = NULL, n = 3) {
 		if(type[i] == "weibull") {
 			param1 <- 0.8
 			param2 <- round(runif(1, maxTarget/5 , maxTarget*1.5), 1)
+			
+			if(i == juiced)
+				param2 <- targetLoc / gamma(2.25)
 		}
 		
 		out[[i]] <- list(type = type[i], param1 = param1, param2 = param2)

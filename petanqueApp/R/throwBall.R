@@ -16,7 +16,7 @@ throwBall <- function(distribution = "normal", param1 = 5,
 		param2 = 1, posDF = posDF, step = Inf, distance = NULL) {
   
   i <- min(which(!posDF$thrown))
-  if (is.null(distance))
+  if(is.null(distance))
     distance <- distanceFromDistribution(distribution = distribution, param1 = param1, param2 = param2)
   
   if (step >= 1) {
@@ -49,6 +49,28 @@ throwBall <- function(distribution = "normal", param1 = 5,
     
     posDF$thrown[i] <- TRUE
     posDF$x[i] <- distance
+	posDF$travelDist[i] <- distance
+	
+	doCollisionCheck <- TRUE; collisNo <- 0
+	collided <- FALSE
+	while(doCollisionCheck) {
+		posDF <- detectCollision(posDF, collisNo = collisNo)
+		collisNo <- collisNo + 1
+		
+		# if there is a collision, animate it and update positions
+		if(any(posDF$travelDist != 0)) {
+			collided <- TRUE
+			posDF <- animateCollision(posDF); Sys.sleep(1)
+		}
+			
+		if(collisNo == 4)
+			doCollisionCheck <- FALSE
+		if(all(posDF$travelDis == 0))
+			doCollisionCheck <- FALSE
+	}
+	if(collided)
+		refreshPlot(posDF)
+	
     # TODO posDF <- detectColission()
     if(i < 7) {
       drawHuman(color = posDF$color[i+1]) #; Sys.sleep(1)
