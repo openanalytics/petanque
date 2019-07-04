@@ -112,15 +112,40 @@ animateThrow <- function(distance, color, step = Inf) {
 	
 }
 
-animateCollision <- function(startX, distance, color) {
+animateCollision <- function(posDF) {  # startX, distance, color
 	
-	points(x = startX + 1.2 * distance / 5, y = 0.4/2, cex = 1, pch = 19, col = color); Sys.sleep(0.5)
-	points(x = startX + 2.2 * distance / 5, y = 0.65/2, cex = 1.5, pch = 19, col = color); Sys.sleep(0.5)
-	points(x = startX + 3.5 * distance / 5, y = 0.6/2, cex = 2, pch = 19, col = color); Sys.sleep(0.5)
-	points(x = startX + 4.3 * distance / 5, y = 0.4/2, cex = 2.5, pch = 19, col = color); Sys.sleep(0.5)
-	# points(x = distance, y = 0, cex = 3, pch = 19, col = color); Sys.sleep(1/30)
+	flying <- posDF[which(posDF$thrown & posDF$travelDist != 0), ]
 	
-	# then wipe it
+	for(jAnimation in 1:4) {
+		for(i in 1:nrow(flying)) {
+			if(jAnimation == 1)
+				points(x = flying$x[i] + 1.2 * flying$travelDist[i] / 5,
+						y = 0.4/2, cex = 1, pch = 19, col = oaColors(flying$color[i])) 
+			if(jAnimation == 2)
+				points(x = flying$x[i] + 2.2 * flying$travelDist[i] / 5,
+						y = 0.65/2, cex = 1, pch = 19, col = oaColors(flying$color[i])) 
+			if(jAnimation == 3)
+				points(x = flying$x[i] + 3.5 * flying$travelDist[i] / 5,
+						y = 0.6/2, cex = 1, pch = 19, col = oaColors(flying$color[i])) 
+			if(jAnimation == 4)
+				points(x = flying$x[i] + 4.3 * flying$travelDist[i] / 5,
+						y = 0.4/2, cex = 1, pch = 19, col = oaColors(flying$color[i])) 
+		}
+		Sys.sleep(0.5)
+	}
+	
+	posDF$x <- posDF$x + posDF$travelDist
+	points(x = posDF$x[1], y = 0.05, col = oaColors("red"), pch = 19, cex = 1.5)
+	
+	# determine y values
+	for(i in 1:nrow(posDF))
+		posDF$y[i] <- ifelse(posDF$x[i] > 10 | posDF$y[i] < 0, -0.3, 0.09)
+	
+	for(jRow in 7:2)
+		if(posDF$thrown[jRow])
+			points(x = posDF$x[jRow], y = posDF$y[jRow], col = oaColors(posDF$color[jRow]), cex = 3, pch = 19)
+	
+	return(posDF)
 	
 }
 
