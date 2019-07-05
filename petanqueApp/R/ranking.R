@@ -7,7 +7,8 @@ RANKING_FILE <- "/tmp/petanque-ranking.rds"
 #' @param score Score
 #' @param file Path to the RDS file with saved ranking
 updateRanking <- function(players, winner, score, file = RANKING_FILE) {
-    
+    print(players)
+    print(winner) 
   if (file.exists(file)) {
       rankingDB <- readRDS(file)
   } else {
@@ -39,12 +40,12 @@ updateRanking <- function(players, winner, score, file = RANKING_FILE) {
   initialRanking <- list('player1' = 0, 'player2' = 0)
   
   for(iplayer in 1:nrow(oldRanks)){
-#      if(oldRanks[iplayer,'rank']=='new player'){
-#          initR <- specialRanking(infoPlayer1 = oldRanks[iplayer,], ratingPlayer2 = oldRanks[2-(iplayer-1),'rating'], score = score[iplayer])
-#      }
-#      else{
+      if(oldRanks[iplayer,'rank']=='new player'){
+          initR <- specialRanking(infoPlayer1 = oldRanks[iplayer,], ratingPlayer2 = oldRanks[2-(iplayer-1),'rating'], score = score[iplayer])
+      }
+      else{
           initR <- oldRanks[iplayer,'rating']
-      #}
+      }
 #      
 #      if(initR<100){
 #           
@@ -57,36 +58,36 @@ updateRanking <- function(players, winner, score, file = RANKING_FILE) {
  
   # step 4) calculate an intermediate rating : special ranking for less than 8 games or all wins or all losses / standard ranking otherwise
     
-#    intermediateRanking <- list('player1' = 0, 'player2' = 0) 
-#    
-#    for(iplayer in 1:nrow(oldRanks)){
-#        
-#        if(oldRanks[iplayer,'gamesPlayed'] < 8  | oldRanks[iplayer,'gamesPlayed'] == oldRanks[iplayer,'nSuccessiveWins'] | oldRanks[iplayer,'gamesPlayed'] == oldRanks[iplayer,'nSuccessiveLosses']){
-#            intermediateR <- specialRanking(infoPlayer1 = oldRanks[iplayer,], ratingPlayer2 =  initialRanking[[2-(iplayer-1)]], score = score[iplayer])
-#        }
-#        else{
-#            intermediateR <- standardRanking(infoPlayer1 = oldRanks[iplayer,], ratingPlayer2 =  initialRanking[[2-(iplayer-1)]], score = score[iplayer])
-#        }
-#        
-#        if(intermediateR <100){
-#            
-#            intermediateR  = 100
-#        }
-#        
-#        intermediateRanking[[iplayer]] <-  intermediateR 
-#    }
+    intermediateRanking <- list('player1' = 0, 'player2' = 0) 
+    
+    for(iplayer in 1:nrow(oldRanks)){
+        
+        if(oldRanks[iplayer,'gamesPlayed'] < 4  | oldRanks[iplayer,'gamesPlayed'] == oldRanks[iplayer,'nWins'] | oldRanks[iplayer,'gamesPlayed'] == oldRanks[iplayer,'nLosses']){
+            intermediateR <- specialRanking(infoPlayer1 = oldRanks[iplayer,], ratingPlayer2 =  initialRanking[[2-(iplayer-1)]], score = score[iplayer])
+        }
+        else{
+            intermediateR <- standardRanking(infoPlayer1 = oldRanks[iplayer,], ratingPlayer2 =  initialRanking[[2-(iplayer-1)]], score = score[iplayer])
+        }
+        
+        if(intermediateR <100){
+            
+            intermediateR  = 100
+        }
+        
+        intermediateRanking[[iplayer]] <-  intermediateR 
+    }
 
   # step 5) calculate a final rating
     
     finalRanking <- list('player1' = 0, 'player2' = 0) 
     
     for(iplayer in 1:nrow(oldRanks)){
-        #if(oldRanks[iplayer,'gamesPlayed'] < 8  | oldRanks[iplayer,'gamesPlayed'] == oldRanks[iplayer,'nSuccessiveWins'] | oldRanks[iplayer,'gamesPlayed'] == oldRanks[iplayer,'nSuccessiveLosses']){
-        #    finalR <- specialRanking(infoPlayer1 = oldRanks[iplayer,], ratingPlayer2 =  intermediateRanking[[2-(iplayer-1)]], score = score[iplayer])
-        #}
-        #else{
+        if(oldRanks[iplayer,'gamesPlayed'] < 4  | oldRanks[iplayer,'gamesPlayed'] == oldRanks[iplayer,'nWins'] | oldRanks[iplayer,'gamesPlayed'] == oldRanks[iplayer,'nLosses']){
+            finalR <- specialRanking(infoPlayer1 = oldRanks[iplayer,], ratingPlayer2 =  intermediateRanking[[2-(iplayer-1)]], score = score[iplayer])
+        }
+        else{
             finalR <- standardRanking(infoPlayer1 = oldRanks[iplayer,], ratingPlayer2 =  initialRanking[[2-(iplayer-1)]], score = score[iplayer])
-        #}
+        }
         
 #        if(finalR<100){
 #            
@@ -187,7 +188,7 @@ computePWe <- function(rankingPlayer, rankingPlayeri){
 #' @param S_prime Result of the S_prime parameter
 #' @param rankingDB The current ranking database
 objFunction <- function(rank, effectiveGames, R_0_prime, ratingPlayer2, S_prime){
-    newR <- effectiveGames + computePWe(rank, R_0_prime) + computePWe(rank, ratingPlayer2) - S_prime
+    newR <- effectiveGames * computePWe(rank, R_0_prime) + computePWe(rank, ratingPlayer2) - S_prime
     return(newR)
 }
 
@@ -198,11 +199,11 @@ objFunction <- function(rank, effectiveGames, R_0_prime, ratingPlayer2, S_prime)
 #' @param score Scored obtained by the player
 specialRanking <- function(infoPlayer1, ratingPlayer2, score){
 
-   if(infoPlayer1$gamesPlayed == infoPlayer1$nSuccessiveWins){ #all wins
+   if(infoPlayer1$gamesPlayed == infoPlayer1$nWins){ #all wins
        R_0_prime <- infoPlayer1$rating  - 400
        S_prime <- score + infoPlayer1$effectiveGames
    }
-   else if(infoPlayer1$gamesPlayed == infoPlayer1$nSuccessiveLosses){ #all losses
+   else if(infoPlayer1$gamesPlayed == infoPlayer1$nLosses){ #all losses
        R_0_prime <- infoPlayer1$rating  + 400
        S_prime <- score      
    }

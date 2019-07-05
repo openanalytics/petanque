@@ -7,7 +7,7 @@ petanqueServer <- function(input, output, session) {
   observeEvent(input$debug_console, browser())
   
   ## config and initialization 
-  MAX_TURNS <- 2
+  MAX_TURNS <- 6
   STEP_MAX <- 8  # animation steps
   DELAY <- 500  # animation step delay in ms 
   
