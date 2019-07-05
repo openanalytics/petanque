@@ -16,7 +16,7 @@ Authors@R: c(
            email = "machteld.varewyck@openanalytics.eu")     
     )
 Description: Petanque Game for useR!2019
-Imports: shiny, DT, oaPlots, plotrix, RColorBrewer, oaColors, beepr
+Imports: shiny, DT, oaPlots, plotrix, RColorBrewer, oaColors, beepr, svglite
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
