@@ -17,10 +17,10 @@ posDF <- newGame()
 
 Sys.sleep(5)
 posDF$x[1] <- 5
-posDF <- throwBall(distribution = "degenerate", param1 = 5.4, param2 = NA, posDF);
+posDF <- throwBall(distribution = "degenerate", param1 = subset(posDF, type == "target")$x, param2 = NA, posDF);
 posDF <- throwBall(distribution = "degenerate", param1 = 8.5, param2 = NA, posDF);
 posDF <- throwBall(distribution = "degenerate", param1 = 10, param2 = NA, posDF);
-posDF <- throwBall(distribution = "degenerate", param1 = 5, param2 = NA, posDF);
+posDF <- throwBall(distribution = "degenerate", param1 = 5.2, param2 = NA, posDF);
 
 distribution = "degenerate"; param1 <- 5.2; param2 <- NA
 
