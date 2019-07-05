@@ -29,23 +29,28 @@ updateRanking <- function(players, winner, score, file = RANKING_FILE) {
   effectiveNrGames <- sapply(1:nrow(oldRanks), function(iRow) getEffectiveNrGames(oldRanking = oldRanks[iRow,'rating'],gamesPlayed = oldRanks[iRow,'gamesPlayed'])) 
   oldRanks$effectiveGames <- effectiveNrGames 
   
-  score <- c(0.5,0.5)
+  scoreFinal <- c(0.5,0.5)
+  addedValue <- switch(score,
+          '1' = 0.0,
+          '2'= 0.3,
+          '3' = 0.6)
+
   if(winner==1){
-      score <- c(1,0)
+      scoreFinal <- c(1 + addedValue,0)
   }else{
-      score <- c(0,1)
+      scoreFinal <- c(0,1 + addedValue)
   }
   
   # step 3) for unrated players only: temparory estimates of ratings
   initialRanking <- list('player1' = 0, 'player2' = 0)
   
   for(iplayer in 1:nrow(oldRanks)){
-      if(oldRanks[iplayer,'rank']=='new player'){
-          initR <- specialRanking(infoPlayer1 = oldRanks[iplayer,], ratingPlayer2 = oldRanks[2-(iplayer-1),'rating'], score = score[iplayer])
-      }
-      else{
+#      if(oldRanks[iplayer,'rank']=='new player'){
+#          initR <- specialRanking(infoPlayer1 = oldRanks[iplayer,], ratingPlayer2 = oldRanks[2-(iplayer-1),'rating'], score = scoreFinal[iplayer])
+#      }
+#      else{
           initR <- oldRanks[iplayer,'rating']
-      }
+#      }
 #      
 #      if(initR<100){
 #           
@@ -61,20 +66,32 @@ updateRanking <- function(players, winner, score, file = RANKING_FILE) {
     intermediateRanking <- list('player1' = 0, 'player2' = 0) 
     
     for(iplayer in 1:nrow(oldRanks)){
-        
-        if(oldRanks[iplayer,'gamesPlayed'] < 4  | oldRanks[iplayer,'gamesPlayed'] == oldRanks[iplayer,'nWins'] | oldRanks[iplayer,'gamesPlayed'] == oldRanks[iplayer,'nLosses']){
-            intermediateR <- specialRanking(infoPlayer1 = oldRanks[iplayer,], ratingPlayer2 =  initialRanking[[2-(iplayer-1)]], score = score[iplayer])
-        }
-        else{
-            intermediateR <- standardRanking(infoPlayer1 = oldRanks[iplayer,], ratingPlayer2 =  initialRanking[[2-(iplayer-1)]], score = score[iplayer])
-        }
-        
-        if(intermediateR <100){
-            
-            intermediateR  = 100
-        }
-        
-        intermediateRanking[[iplayer]] <-  intermediateR 
+#        
+#        if(oldRanks[iplayer,'gamesPlayed'] < 4  | oldRanks[iplayer,'gamesPlayed'] == oldRanks[iplayer,'nWins'] | oldRanks[iplayer,'gamesPlayed'] == oldRanks[iplayer,'nLosses']){
+#            intermediateR <- specialRanking(infoPlayer1 = oldRanks[iplayer,], ratingPlayer2 =  initialRanking[[2-(iplayer-1)]], score = scoreFinal[iplayer])
+#        }
+#        else{
+#            
+#          addedValue <- switch(score,
+#          '1' = 0.0,
+#          '2'= 0.3,
+#          '3' = 0.6)
+#            
+#            if(winner==1){
+#                scoreFinal <- c(1 + addedValue,0)
+#            }else{
+#                scoreFinal <- c(0,1 + addedValue)
+#            }
+#            intermediateR <- standardRanking(infoPlayer1 = oldRanks[iplayer,], ratingPlayer2 =  initialRanking[[2-(iplayer-1)]], score = scoreFinal[iplayer])
+#        }
+#        
+##        if(intermediateR <100){
+##            
+##            intermediateR  = 100
+##        }
+#        
+#        intermediateRanking[[iplayer]] <-  intermediateR 
+        intermediateRanking[[iplayer]] <-  initialRanking[[iplayer]]
     }
 
   # step 5) calculate a final rating
@@ -82,12 +99,12 @@ updateRanking <- function(players, winner, score, file = RANKING_FILE) {
     finalRanking <- list('player1' = 0, 'player2' = 0) 
     
     for(iplayer in 1:nrow(oldRanks)){
-        if(oldRanks[iplayer,'gamesPlayed'] < 4  | oldRanks[iplayer,'gamesPlayed'] == oldRanks[iplayer,'nWins'] | oldRanks[iplayer,'gamesPlayed'] == oldRanks[iplayer,'nLosses']){
-            finalR <- specialRanking(infoPlayer1 = oldRanks[iplayer,], ratingPlayer2 =  intermediateRanking[[2-(iplayer-1)]], score = score[iplayer])
-        }
-        else{
-            finalR <- standardRanking(infoPlayer1 = oldRanks[iplayer,], ratingPlayer2 =  initialRanking[[2-(iplayer-1)]], score = score[iplayer])
-        }
+#        if(oldRanks[iplayer,'gamesPlayed'] < 4  | oldRanks[iplayer,'gamesPlayed'] == oldRanks[iplayer,'nWins'] | oldRanks[iplayer,'gamesPlayed'] == oldRanks[iplayer,'nLosses']){
+#            finalR <- specialRanking(infoPlayer1 = oldRanks[iplayer,], ratingPlayer2 =  intermediateRanking[[2-(iplayer-1)]], score = scoreFinal[iplayer])
+#        }
+#        else{
+            finalR <- standardRanking(infoPlayer1 = oldRanks[iplayer,], ratingPlayer2 =  initialRanking[[2-(iplayer-1)]], score = scoreFinal[iplayer])
+#        }
         
 #        if(finalR<100){
 #            
@@ -198,7 +215,7 @@ objFunction <- function(rank, effectiveGames, R_0_prime, ratingPlayer2, S_prime)
 #' @param ratingPlayer2 The rating of player 2
 #' @param score Scored obtained by the player
 specialRanking <- function(infoPlayer1, ratingPlayer2, score){
-
+     
    if(infoPlayer1$gamesPlayed == infoPlayer1$nWins){ #all wins
        R_0_prime <- infoPlayer1$rating  - 400
        S_prime <- score + infoPlayer1$effectiveGames
