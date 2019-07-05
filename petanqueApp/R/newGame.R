@@ -3,7 +3,7 @@
 #' @import RColorBrewer
 #' @import plotrix
 newGame <- function() {
-	drawField()
+	drawField(newPlot = TRUE)
 	drawHuman("orange")
 	
 	# define the data frame which tracks the positions
