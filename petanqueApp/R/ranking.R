@@ -1,6 +1,6 @@
 RANKING_FILE <- "/tmp/petanque-ranking.rds"
-#players <- c('Maxim','Marijke')
-#winner <- 1
+players <- c('Maxim','Marijke')
+winner <- 1
 #' Update ranking based on the result of the game
 #' @param players Player names (character vector of length 2)
 #' @param winner Winning player's number 1 or 2 or 0 (tie)
@@ -11,14 +11,14 @@ updateRanking <- function(players, winner, score, file = RANKING_FILE) {
   if (file.exists(file)) {
       rankingDB <- readRDS(file)
   } else {
-      rankingDB <- data.frame('player'= players, 'rating' = rep(750,2),  'gamesPlayed' = rep(0,2), 'nSuccessiveWins' = rep(0,2), 'nSuccessiveLosses' = rep(0,2), type = 'unranked',stringsAsFactors=FALSE) 
+      rankingDB <- data.frame('rank' = 'new player' ,'player'= players, 'rating' = rep(750,2),  'gamesPlayed' = rep(0,2), 'nWins' = rep(0,2), 'nLosses' = rep(0,2),stringsAsFactors=FALSE) 
       saveRDS(rankingDB, file = file) 
   }
-  if (length(missingPlayers <- setdiff(players, rankingDB$player))) { # add player(s) that don't have ranking
-    rankingDB <- rbind(rankingDB, 
-        data.frame('player' = missingPlayers, 'rating' = 750,  'gamesPlayed' = 0, 'nSuccessiveWins' = 0, 'nSuccessiveLosses' = 0, type = 'unranked', stringsAsFactors = FALSE)
-    )
-  }
+#  if (length(missingPlayers <- setdiff(players, rankingDB$player))) { # add player(s) that don't have ranking
+#    rankingDB <- rbind(rankingDB, 
+#        data.frame('player' = missingPlayers, 'rank' = 'new player', 'rating' = 750,  'gamesPlayed' = 0, 'nWins' = 0, 'nLosses' = 0, type = 'unranked', stringsAsFactors = FALSE)
+#    )
+#  }
   
   # step 1) get previous ranking / initialize ranking
   oldRanks <- lapply(players, function(p) getRanking(player = p, rankingDB = rankingDB))
@@ -39,7 +39,7 @@ updateRanking <- function(players, winner, score, file = RANKING_FILE) {
   initialRanking <- list('player1' = 0, 'player2' = 0)
   
   for(iplayer in 1:nrow(oldRanks)){
-#      if(oldRanks[iplayer,'type']=='unranked'){
+#      if(oldRanks[iplayer,'rank']=='new player'){
 #          initR <- specialRanking(infoPlayer1 = oldRanks[iplayer,], ratingPlayer2 = oldRanks[2-(iplayer-1),'rating'], score = score[iplayer])
 #      }
 #      else{
@@ -102,14 +102,15 @@ updateRanking <- function(players, winner, score, file = RANKING_FILE) {
     newRanks <- oldRanks
     newRanks$rating <- unlist(finalRanking)
     newRanks$gamesPlayed <- newRanks$gamesPlayed + 1
-    newRanks$nSuccessiveWins <- newRanks$nSuccessiveWins + floor(score)
-    newRanks$nSuccessiveLosses <- newRanks$nSuccessiveLosses + floor(abs(score-1))
-    newRanks$type <- 'ranked'
+    newRanks$nWins <- newRanks$nWins + floor(score)
+    newRanks$nLosses <- newRanks$nLosses + floor(abs(score-1))
+    #newRanks$type <- 'ranked'
     
     rankingDB[which(rankingDB$player%in%players),] <- newRanks[,-c(which(colnames(newRanks)=='effectiveGames'))]
+    rankingDB <-  rankingDB[order(rankingDB$rating,decreasing = TRUE),]  
+    rankingDB$rank <-rank(-rankingDB$rating, ties.method = "min") 
     saveRDS(rankingDB, file = RANKING_FILE) 
-    
-    
+
    #TODO The maximum rating change in a match is 50 points;  
   
     #TODO
@@ -133,7 +134,7 @@ getRanking <- function(player, rankingDB = NULL, file = RANKING_FILE) {
             oldRankingPlayer <- rankingDB[which(rankingDB$player==player),]           
     }
     else{
-        oldRankingPlayer <- data.frame('player'= player, 'rating' = 750,  'gamesPlayed' = 0, 'nSuccessiveWins' = 0, 'nSuccessiveLosses' = 0, 'type' = 'unranked',stringsAsFactors=FALSE)   
+        oldRankingPlayer <- data.frame('rank' = 'new player', 'player'= player, 'rating' = 750,  'gamesPlayed' = 0, 'nWins' = 0, 'nLosses' = 0,stringsAsFactors=FALSE)   
         rankingDB <- rbind(rankingDB,oldRankingPlayer)
         saveRDS(rankingDB, file = file)
     }   
@@ -331,7 +332,7 @@ printRankings <- function(file = RANKING_FILE) {
   }
   
   out <- rankingDB[order(rankingDB$rating, decreasing = TRUE), ]
-  out <- cbind(rank = rank(-out$rating, ties.method = "min"), out)  # note hack using negative rating
+  #out <- cbind(rank = rank(-out$rating, ties.method = "min"), out)  # note hack using negative rating
 
   out
   
