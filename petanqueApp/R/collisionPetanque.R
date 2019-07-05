@@ -108,5 +108,16 @@ getKE <- function(m, v){
 getVFromKE <- function(KE, m){
 	return(sqrt((2*KE)/m))
 }
+
+#' Get Mass of a ball
+#' @param type String with ball type
+#' @return Mass of the target in grams
+#' @author Laure Cougnaud
+#' @export
+getMass <- function(type){
+	# normal ball: between 680 et 710 grams
+	# target ball: between 10 and 18 grams
+	ifelse(type == "target", 0.015, 0.680)
+}
 	
 
