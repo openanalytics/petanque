@@ -16,54 +16,58 @@ detectCollision <- function(posDF, collisNo = 0) {
 	idxFlying <- which(posDF$thrown & posDF$travelDist != 0)
 	flying <- posDF[idxFlying, ]
 	
-	for(i in 1:nrow(sitting)) {
+	if(length(idxFlying) > 0){
 		
-		sittingI <- sitting[i, ]
-		
-		# compute distance with left/right sides of the ball
-		idxHit <- which(sign(sittingI$xMin - flying$xMax) != sign(sittingI$xMax - flying$xMin))
-		
-		if(length(idxHit) > 0) {
+		for(i in 1:nrow(sitting)) {
 			
-			ballDists <- sittingI[, "x"] - flying[idxHit, "x"]
+			sittingI <- sitting[i, ]
 			
-			# only consider the closest ball
-			idxThrowHit <- which.min(abs(ballDists))
-			dHit <- ballDists[idxThrowHit]
+			# compute distance with left/right sides of the ball
+			idxHit <- which(sign(sittingI$xMin - flying$xMax) != sign(sittingI$xMax - flying$xMin))
 			
-			throwHitInfo <- flying[idxHit, ][idxThrowHit, ]
-			
-			# get kinetic energy
-			throwBallKE <- getKE(
-				m = getMass(throwHitInfo$type), 
-				v = getSpeedFromDistance(d = throwHitInfo$travelDist)
-			)
-			
-			# Elastic collision: conservation of kinetic energy
-			# get speed of each hit ball
-			vHit <- getVFromKE(
-				KE = throwBallKE, 
-				m = getMass(sittingI[, "type"])
-			)
-			
-			# get distance of hit ball
-			signDistHit <- sign(dHit)
-			# if no distance, throw the ball in the opposite side of the field
-			if(signDistHit == 0)	signDistHit <- -1*sign(sittingI$x - 5)
-			sitting$travelDist[i] <-  signDistHit * getDistanceFromSpeed(v0 = vHit)
-#			if(ballDists[idx] < 0)
-#				sitting$travelDist[i] <- -3 / (2^(collisNo))
-#			if(ballDists[idx] > 0)
-#				sitting$travelDist[i] <- 3 / (2^(collisNo))
-#			if(ballDists[idx] == 0 & sitting$x[i] < 5)
-#				sitting$travelDist[i] <- -3 / (2^(collisNo))
-#			if(ballDists[idx] == 0 & sitting$x[i] >= 5)
-#				sitting$travelDist[i] <- 3 / (2^(collisNo))
+			if(length(idxHit) > 0) {
+				
+				ballDists <- sittingI[, "x"] - flying[idxHit, "x"]
+				
+				# only consider the closest ball
+				idxThrowHit <- which.min(abs(ballDists))
+				dHit <- ballDists[idxThrowHit]
+				
+				throwHitInfo <- flying[idxHit, ][idxThrowHit, ]
+				
+				# get kinetic energy
+				throwBallKE <- getKE(
+					m = getMass(throwHitInfo$type), 
+					v = getSpeedFromDistance(d = throwHitInfo$travelDist)
+				)
+				
+				# Elastic collision: conservation of kinetic energy
+				# get speed of each hit ball
+				vHit <- getVFromKE(
+					KE = throwBallKE, 
+					m = getMass(sittingI[, "type"])
+				)
+				
+				# get distance of hit ball
+				signDistHit <- sign(dHit)
+				# if no distance, throw the ball in the opposite side of the field
+				if(signDistHit == 0)	signDistHit <- -1*sign(sittingI$x - 5)
+				sitting$travelDist[i] <-  signDistHit * getDistanceFromSpeed(v0 = vHit)
+	#			if(ballDists[idx] < 0)
+	#				sitting$travelDist[i] <- -3 / (2^(collisNo))
+	#			if(ballDists[idx] > 0)
+	#				sitting$travelDist[i] <- 3 / (2^(collisNo))
+	#			if(ballDists[idx] == 0 & sitting$x[i] < 5)
+	#				sitting$travelDist[i] <- -3 / (2^(collisNo))
+	#			if(ballDists[idx] == 0 & sitting$x[i] >= 5)
+	#				sitting$travelDist[i] <- 3 / (2^(collisNo))
+			}
 		}
+		
+		# combine, sort, return
+		flying$travelDist <- rep(0, nrow(flying))
+		
 	}
-	
-	# combine, sort, return
-	flying$travelDist <- 0
 	out <- rbind.data.frame(sitting, flying)
 	
 	idxNotUsed <- setdiff(seq_along(nrow(posDF)), c(idxFlying, idxSitting))
