@@ -122,3 +122,13 @@ div.rankings {
 .controls {
 	text-align: center;
 }
+div.helpRanking-container {
+  text-align: center;
+  padding: 30px;
+}
+div.helpRanking-container button {
+	color: #32a6d3;
+	font-size: large; 
+	background-color: white; 
+	border-color: white;
+}

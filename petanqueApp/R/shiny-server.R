@@ -64,6 +64,10 @@ petanqueServer <- function(input, output, session) {
   ## ui elements
   observeEvent(input$gotoRankings, 
       updateTabsetPanel(session, "main-tabs", selected = "Rankings"))
+  observeEvent(input$linkRankings, 
+      updateTabsetPanel(session, "main-tabs", selected = "Rankings"))
+  observeEvent(input$linkGame, 
+      updateTabsetPanel(session, "main-tabs", selected = "Game"))
   
   output$gameUI <- renderUI({
         tagList(
@@ -86,11 +90,9 @@ petanqueServer <- function(input, output, session) {
         tagList(  
             h2("Ranking"),
             DT::dataTableOutput("rankingTable"),
-            tags$br(),
-            tags$br(),
-            actionButton('helpRanking',"The ranking system", icon = icon('question'),style="color: #32a6d3; background-color: white; border-color: white"),
-            tags$br(),
-            tags$br()
+            div(class = "helpRanking-container", 
+                actionButton("helpRanking", "The ranking system", icon = icon('question'))
+            )
         )  
       })
 
@@ -294,7 +296,7 @@ petanqueServer <- function(input, output, session) {
           showModal(playerInfoModal(failedBoth = TRUE))
         } else {
           removeModal()
-          
+          updateTabsetPanel(session, "main-tabs", selected = "Game")
           playerNames <- c(input$player1, input$player2)
           # save names in the DB
           oldPlayers <- getPlayers()

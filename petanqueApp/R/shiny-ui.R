@@ -92,7 +92,7 @@ petanqueUI <- function(debug = FALSE) {
       fluidRow(
           column(12, 
               div(class = "controls",  
-                  strong("Controls:"), "Use up/down arrows to choose distribution, 'Enter' or 'Space' to start/select, left/right arrows to switch between Game and Rankings")
+                  strong("Controls:"), "Use up/down arrows to choose distribution, 'Enter' or 'Space' to start/select, left/right arrows to switch between", actionLink("linkGame", "Game"), "and", actionLink("linkRankings", "Rankings"))
           )
       )
   
