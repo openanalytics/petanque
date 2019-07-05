@@ -137,7 +137,9 @@ animateCollision <- function(posDF) {  # startX, distance, color
 	}
 	
 	posDF$x <- posDF$x + posDF$travelDist
-	points(x = posDF$x[1], y = 0.05, col = oaColors("red"), pch = 19, cex = 1.5)
+	draw.circle(x = posDF$x[1], y = 0.05, col = oaColors(posDF$color[1]),  
+			radius = posDF$width[1]/2, nv = 120, border = oaColors(posDF$color[1]))
+	#points(x = posDF$x[1], y = 0.05, col = oaColors("red"), pch = 19, cex = 1.5)
 	
 	# determine y values
 	for(i in 1:nrow(posDF)) {
@@ -154,7 +156,9 @@ animateCollision <- function(posDF) {  # startX, distance, color
 	
 	for(jRow in 7:2)
 		if(posDF$thrown[jRow])
-			points(x = posDF$x[jRow], y = posDF$y[jRow], col = oaColors(posDF$color[jRow]), cex = 3, pch = 19)
+			draw.circle(x = posDF$x[jRow], y = 0.05, col = oaColors(posDF$color[jRow]),  
+					radius = posDF$width[jRow]/2, nv = 120, border = oaColors(posDF$color[jRow]))
+			#points(x = posDF$x[jRow], y = posDF$y[jRow], col = oaColors(posDF$color[jRow]), cex = 3, pch = 19)
 	
 	return(posDF)
 	
@@ -164,10 +168,12 @@ animateCollision <- function(posDF) {  # startX, distance, color
 refreshPlot <- function(posDF) {
 	
 	drawField()
-	points(x = posDF$x[1], y = 0.05, col = oaColors("red"), pch = 19, cex = 1.5)
+	draw.circle(x = posDF$x[1], y = 0.05, col = oaColors(posDF$color[1]),  
+			radius = posDF$width[1]/2, nv = 120, border = oaColors(posDF$color[1]))
 	for(jRow in 2:7)
 		if(posDF$thrown[jRow])
-			points(x = posDF$x[jRow], y = posDF$y[jRow], col = oaColors(posDF$color[jRow]), cex = 3, pch = 19)
+			draw.circle(x = posDF$x[jRow], y = 0.05, col = oaColors(posDF$color[jRow]),  
+					radius = posDF$width[jRow]/2, nv = 120, border = oaColors(posDF$color[jRow]))
 	drawHuman(color = "none"); #Sys.sleep(0.3)
 	
 }

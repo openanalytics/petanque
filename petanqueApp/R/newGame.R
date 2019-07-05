@@ -18,7 +18,9 @@ newGame <- function() {
 	posDF$color <- as.character(posDF$color)
 	# determine little ball positions
 	posDF$x[1] <- runif(1, 3, 7)
-	points(x = posDF$x[1], y = 0.05, col = oaColors("red"), pch = 19, cex = 1.5)
+	draw.circle(x = posDF$x[1], y = 0.05, col = oaColors(posDF$color[1]),  
+			radius = posDF$width[1]/2, nv = 120, border = oaColors(posDF$color[1]))
+	#points(x = posDF$x[1], y = 0.05, col = oaColors("red"), pch = 19, cex = 1.5)
 	
 	return(posDF)
 }
