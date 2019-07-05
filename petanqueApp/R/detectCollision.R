@@ -51,16 +51,11 @@ detectCollision <- function(posDF, collisNo = 0) {
 				# get distance of hit ball
 				signDistHit <- sign(dHit)
 				# if no distance, throw the ball in the opposite side of the field
-				if(signDistHit == 0)	signDistHit <- -1*sign(sittingI$x - 5)
-				sitting$travelDist[i] <-  signDistHit * getDistanceFromSpeed(v0 = vHit)
-	#			if(ballDists[idx] < 0)
-	#				sitting$travelDist[i] <- -3 / (2^(collisNo))
-	#			if(ballDists[idx] > 0)
-	#				sitting$travelDist[i] <- 3 / (2^(collisNo))
-	#			if(ballDists[idx] == 0 & sitting$x[i] < 5)
-	#				sitting$travelDist[i] <- -3 / (2^(collisNo))
-	#			if(ballDists[idx] == 0 & sitting$x[i] >= 5)
-	#				sitting$travelDist[i] <- 3 / (2^(collisNo))
+				if(signDistHit == 0)	signDistHit <- sign(sittingI$x - 5) # -1
+				if(signDistHit == 0)    signDistHit <- 1
+				a <- ifelse(sittingI$type == "target", 700, 10)
+				sitting$travelDist[i] <-  signDistHit * getDistanceFromSpeed(v0 = vHit, a = a)
+
 			}
 		}
 		
