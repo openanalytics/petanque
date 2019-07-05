@@ -168,6 +168,7 @@ animateCollision <- function(posDF, step = Inf) {  # startX, distance, color
       }
       
       posDF$y[i] <- ifelse(posDF$x[i] > 10 | posDF$x[i] < 0, -0.3, 0.09)
+      posDF$y[1] <- 0.05
     }
     
     

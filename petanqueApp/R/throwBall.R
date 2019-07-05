@@ -27,7 +27,7 @@ throwBall <- function(distribution = "normal", param1 = 5,
     distance <- distanceFromDistribution(distribution = distribution, param1 = param1, param2 = param2)
   
   if (step >= 1) {
-    refreshPlot(posDF)
+    refreshPlot(posDF, newPlot = TRUE)
     
     drawDistribution(distribution = distribution, param1 = param1, param2 = param2)
     
