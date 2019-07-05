@@ -47,7 +47,20 @@ petanqueServer <- function(input, output, session) {
         req(gameData())
         winnerNumber(determineOutcome(gameData())$winner)
       })
-  
+
+  rankingDocumentation <- function(){
+            modalDialog(
+                        includeHTML("resources/help.html"),
+                        easyClose = TRUE,
+                        size = 'l'
+                    )
+                }
+
+  observeEvent(input$helpRanking,{
+              showModal(rankingDocumentation())
+              
+          })              
+                
   ## ui elements
   observeEvent(input$gotoRankings, 
       updateTabsetPanel(session, "main-tabs", selected = "Rankings"))
@@ -70,10 +83,15 @@ petanqueServer <- function(input, output, session) {
       })
   
   output$rankingsUI <- renderUI({
-        tagList(
+        tagList(  
             h2("Ranking"),
-            DT::dataTableOutput("rankingTable")
-        )
+            DT::dataTableOutput("rankingTable"),
+            tags$br(),
+            tags$br(),
+            actionButton('helpRanking',"The ranking system", icon = icon('question'),style="color: #32a6d3; background-color: white; border-color: white"),
+            tags$br(),
+            tags$br()
+        )  
       })
 
   # FIXME: file is checked every second, is there a better solution?

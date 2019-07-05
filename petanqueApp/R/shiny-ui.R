@@ -88,6 +88,7 @@ petanqueUI <- function(debug = FALSE) {
               uiOutput("rankingsUI", class = "rankings")
           )
       ),
+      
       fluidRow(
           column(12, 
               div(class = "controls",  
