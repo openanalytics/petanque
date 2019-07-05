@@ -85,7 +85,7 @@ getDistanceFromSpeed <- function(v0, a = 10){
 #' @export
 getSpeedFromDistance <- function(d, theta = pi/4){
 	g <- 9.81 # gravitation constant (m/s^2)
-	v0 <- sqrt((g*d)/sin(2*theta))
+	v0 <- sqrt((g*abs(d))/sin(2*theta))
 	return(v0)
 }
 
