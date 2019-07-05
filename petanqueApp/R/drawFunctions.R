@@ -1,6 +1,11 @@
 #' @export
-drawField <- function() {
-	blankPlot(xlim = c(-2, 13), ylim = c(-0.5, 1))
+drawField <- function(newPlot = FALSE) {
+	if(newPlot) {
+		blankPlot(xlim = c(-2, 13), ylim = c(-0.5, 1))
+	} else {
+		rect(xleft = -4, xright = 15, ybottom = -1, ytop = 2, col = "white", border = "white")
+	}
+	
 	segments(x0 = 0, y0 = 0, x1 = 10, lwd = 3)
 	text(x = 0, y = -0.1, "0", font = 2, adj = c(0.5, 1))
 	text(x = 5, y = -0.1, "5", font = 2, adj = c(0.5, 1))
@@ -172,9 +177,9 @@ animateCollision <- function(posDF) {  # startX, distance, color
 }
 
 #' @export
-refreshPlot <- function(posDF) {
+refreshPlot <- function(posDF, newPlot = FALSE) {
 	
-	drawField()
+	drawField(newPlot = FALSE)
 	draw.circle(x = posDF$x[1], y = posDF$y[1], col = oaColors(posDF$color[1]),  
 			radius = posDF$width[1]/2, nv = 120, border = oaColors(posDF$color[1]))
 	for(jRow in 2:7)

@@ -20,7 +20,8 @@ posDF <- throwBall(distribution = "degenerate", param1 = 5.35, param2 = NA, posD
 posDF <- throwBall(distribution = "degenerate", param1 = 8, param2 = NA, posDF);
 posDF <- throwBall(distribution = "degenerate", param1 = 9.4, param2 = NA, posDF);
 posDF <- throwBall(distribution = "degenerate", param1 = 9.9, param2 = NA, posDF);
-posDF <- throwBall(distribution = "degenerate", param1 = 5.2, param2 = NA, posDF);
+posDF <- throwBall(distribution = "degenerate", param1 = 1.2, param2 = NA, posDF);
+posDF <- throwBall(distribution = "degenerate", param1 = 4.7, param2 = NA, posDF);
 
 distribution = "degenerate"; param1 <- 5.3; param2 <- NA
 
