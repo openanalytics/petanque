@@ -12,6 +12,7 @@
 #' @inheritParams getDistanceFromSpeed
 #' @example inst/examples/collisionPetanque.R
 #' @author Laure Cougnaud
+#' @export
 collisionPetanque <- function(data, throwBallID, throwBallV, a = 10){
 	
 	# determine left and right sides of the ball
@@ -64,6 +65,7 @@ collisionPetanque <- function(data, throwBallID, throwBallV, a = 10){
 #' @param a Acceleration (currently fixed), decceleration of 10m/s^2 by default.
 #' @return Achieved distance, in m
 #' @author Laure Cougnaud, Maxim Nazarov
+#' @export
 getDistanceFromSpeed <- function(v0, a = 10){
 	# vEnd = vInit + 2 * a * d
 	# vEnd = 0
@@ -80,6 +82,7 @@ getDistanceFromSpeed <- function(v0, a = 10){
 #' @param theta Launching angle, 45 by default
 #' @return Speed in m/s
 #' @author Laure Cougnaud
+#' @export
 getSpeedFromDistance <- function(d, theta = pi/4){
 	g <- 9.81 # gravitation constant (m/s^2)
 	v0 <- sqrt((g*d)/sin(2*theta))
@@ -91,6 +94,7 @@ getSpeedFromDistance <- function(d, theta = pi/4){
 #' @param v Object velocity, in m/s
 #' @return Kinetic Energy in Joules
 #' @author Laure Cougnaud
+#' @export
 getKE <- function(m, v){
 	return(1/2 * m * v^2)
 }
@@ -100,6 +104,7 @@ getKE <- function(m, v){
 #' @param m Mass of the object in kg
 #' @return Object velocity, in m/s
 #' @author Laure Cougnaud
+#' @export
 getVFromKE <- function(KE, m){
 	return(sqrt((2*KE)/m))
 }
