@@ -140,8 +140,17 @@ animateCollision <- function(posDF) {  # startX, distance, color
 	points(x = posDF$x[1], y = 0.05, col = oaColors("red"), pch = 19, cex = 1.5)
 	
 	# determine y values
-	for(i in 1:nrow(posDF))
-		posDF$y[i] <- ifelse(posDF$x[i] > 10 | posDF$y[i] < 0, -0.3, 0.09)
+	for(i in 1:nrow(posDF)) {
+		if(i == 1) {
+			if(posDF$x[i] > 10)
+				posDF$x[i] <- 10
+			if(posDF$x[i] < 0)
+				posDF$x[i] <- 0
+		}
+				
+		posDF$y[i] <- ifelse(posDF$x[i] > 10 | posDF$x[i] < 0, -0.3, 0.09)
+	}
+		
 	
 	for(jRow in 7:2)
 		if(posDF$thrown[jRow])

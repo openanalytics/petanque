@@ -22,7 +22,7 @@ posDF <- throwBall(distribution = "degenerate", param1 = 8.5, param2 = NA, posDF
 posDF <- throwBall(distribution = "degenerate", param1 = 10, param2 = NA, posDF);
 posDF <- throwBall(distribution = "degenerate", param1 = 5.2, param2 = NA, posDF);
 
-distribution = "degenerate"; param1 <- 5.5; param2 <- NA
+distribution = "degenerate"; param1 <- 5.2; param2 <- NA
 
 options <- generateOptions(posDF)
 printOptions(options)
