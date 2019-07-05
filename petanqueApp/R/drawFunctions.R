@@ -124,7 +124,7 @@ animateCollision <- function(posDF, step = Inf) {  # startX, distance, color
 	flying <- posDF[which(posDF$thrown & posDF$travelDist != 0), ]
 	nFlying <- nrow(flying)
   
-  animationStep <- if (is.infinite(step)) Inf else (step-8) %% 5+1  # 8->1, ..., 12->5, 13->1, ...
+  animationStep <- if (is.infinite(step)) Inf else (step-7) %% 5+1  # 7->1, ..., 11->5, 12->1, ...
   
 #	for(jAnimation in 1:4) {
 #		for(i in 1:nrow(flying)) {

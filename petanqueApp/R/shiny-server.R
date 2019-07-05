@@ -210,7 +210,7 @@ petanqueServer <- function(input, output, session) {
               req(!animationFinished(), distance())  # animationStep() < STEP_MAX
               curStep <- animationStep()
               
-              if (curStep <= 7) {
+              if (curStep <= 6) {
                 posDFarg <- gameData() # original data
               } else { 
                 posDFarg <- intermediateData()
@@ -225,9 +225,7 @@ petanqueServer <- function(input, output, session) {
               
               finished <- FALSE
 
-              if (curStep == 7) {
-                doCollisionCheck <- TRUE
-                collided <- FALSE
+              if (curStep == 6) {
                 posDF <- detectCollision(posDF) #, collisNo = collisNo)
                 if (any(posDF$travelDist != 0)) { # continue
 #                  playSound("hit")
@@ -239,8 +237,8 @@ petanqueServer <- function(input, output, session) {
                 }
               }
               
-              if (curStep > 7) {
-                if ((curStep-7) %% 5 == 0) {
+              if (curStep > 6) {
+                if ((curStep-6) %% 5 == 0) {
                   # finished collision animation
                   if (collisNo() < 4) {
                     posDF <- detectCollision(posDF) #, collisNo = collisNo)
@@ -262,8 +260,8 @@ petanqueServer <- function(input, output, session) {
 
               if (finished) {
                 # TODO
-                #refreshPlot(posDF)
-                if(turnNumber() < 7) {
+#                refreshPlot(posDF, newPlot = FALSE)
+                if (turnNumber() <= MAX_TURNS) {
                   drawHuman(color = posDF$color[turnNumber()+1]) #; Sys.sleep(1)
                 }
 #                playSound("ball")
@@ -275,15 +273,6 @@ petanqueServer <- function(input, output, session) {
               
               dev.off()
               gamePlot(svgStr())
-              
-              
-#              # TODO: detect from posDF?
-#              if (curStep == STEP_MAX-2)
-#                # any(posDF$travelDist != 0)
-#                playSound("hit") #ball landed or collision
-#              # TODO: from posDF too...
-#              if (curStep == STEP_MAX-1)
-#                gameData(posDF)
               
             })
       })
