@@ -25,10 +25,10 @@ The updating of the rating consists of the following steps:
 
 ##### **Step 1**  
  
- Assume a player has rating *R* and the opponent has rating R_i.	
+ Assume a player has rating $R$ and the opponent has rating $R_i$.	
  Calculate the expected score of the player as:
 		
- $$ E_{R} =  \frac{1}{1+10^-(R-R_i)/400} $$
+ $$ E_{R} =  \frac{1}{1+10^{-(R-R_i)/400}} $$
 	 	
 ##### **Step 2**  
  
@@ -46,7 +46,7 @@ K = \left\{
 \right.
 \]
 
-The parameter *S* represents the score, taking into account the result of the
+The parameter $S$ represents the score, taking into account the result of the
 petanque game:
 
 \[

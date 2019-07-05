@@ -51,7 +51,7 @@ petanqueServer <- function(input, output, session) {
 
   rankingDocumentation <- function(){
             modalDialog(
-                        includeHTML("resources/help.html"),
+                        includeHTML(system.file("resources", "help.html", package = "petanqueApp")),
                         easyClose = TRUE,
                         size = 'l'
                     )
@@ -393,6 +393,7 @@ petanqueServer <- function(input, output, session) {
     # use names in the game
     players(playerNames)
     # get their rankings
+    refreshRankingsFile(runif(1))
     rankings(c(getRanking(playerNames[1])$rating, getRanking(playerNames[2])$rating))
     # Set active player
     activePlayer(1)

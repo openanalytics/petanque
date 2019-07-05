@@ -254,9 +254,7 @@ h6 {
 </style>
 
 
-</head>
 
-<body>
 
 <style type="text/css">
 .main-container {
@@ -281,22 +279,92 @@ img {
 button.code-folding-btn:focus {
   outline: none;
 }
+summary {
+  display: list-item;
+}
 </style>
 
 
 
-<div class="container-fluid main-container">
-
 <!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
 <script>
 $(document).ready(function () {
   window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
 });
 </script>
 
 <!-- code folding -->
 
 
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
 
 
 
@@ -327,9 +395,9 @@ Consequently, new players are not at the bottom of the ranking although they are
 <p>The updating of the rating consists of the following steps:</p>
 <div id="step-1" class="section level5">
 <h5><strong>Step 1</strong></h5>
-<p>Assume a player has rating <em>R</em> and the opponent has rating R_i.<br />
+<p>Assume a player has rating <span class="math inline">\(R\)</span> and the opponent has rating <span class="math inline">\(R_i\)</span>.<br />
 Calculate the expected score of the player as:</p>
-<p><span class="math display">\[ E_{R} =  \frac{1}{1+10^-(R-R_i)/400} \]</span></p>
+<p><span class="math display">\[ E_{R} =  \frac{1}{1+10^{-(R-R_i)/400}} \]</span></p>
 </div>
 <div id="step-2" class="section level5">
 <h5><strong>Step 2</strong></h5>
@@ -344,7 +412,7 @@ K = \left\{
 \end{array} 
 \right.
 \]</span></p>
-<p>The parameter <em>S</em> represents the score, taking into account the result of the petanque game:</p>
+<p>The parameter <span class="math inline">\(S\)</span> represents the score, taking into account the result of the petanque game:</p>
 <p><span class="math display">\[
  S = \left\{  
  \begin{array}{l}     
@@ -359,7 +427,7 @@ K = \left\{
 \right. 
 \]</span></p>
 <p>The rating of the player is updated by:</p>
-<p><span class="math display">\[R^{'} = R + K \cdot (S - E_{R})\]</span></p>
+<p><span class="math display">\[R^{&#39;} = R + K \cdot (S - E_{R})\]</span></p>
 <p>Game on!</p>
 </div>
 </div>
