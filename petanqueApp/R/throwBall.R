@@ -32,7 +32,7 @@ throwBall <- function(distribution = "normal", param1 = 5,
     segments(x0 = distance, y0 = 1.1, y1 = 0, col = oaColors(posDF$color[i]), lwd = 4)
     
     posDF$y[i] <- ifelse(distance > 10 | distance < 0, -0.3, 0.09)
-	draw.circle(x = distance, y = 0.05, col = oaColors(posDF$color[i]),  
+	draw.circle(x = distance, y = posDF$y[i], col = oaColors(posDF$color[i]),  
 			radius = posDF$width[i]/2, nv = 120, border = oaColors(posDF$color[i]))
   }
 
