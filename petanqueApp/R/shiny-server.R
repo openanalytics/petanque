@@ -38,6 +38,7 @@ petanqueServer <- function(input, output, session) {
         length(distrChoices())
       })
   # we always know the current score
+
   score <- reactive({
         req(gameData())
         determineOutcome(gameData())$pointsWon
@@ -47,7 +48,20 @@ petanqueServer <- function(input, output, session) {
         req(gameData())
         winnerNumber(determineOutcome(gameData())$winner)
       })
-  
+
+  rankingDocumentation <- function(){
+            modalDialog(
+                        includeHTML("resources/help.html"),
+                        easyClose = TRUE,
+                        size = 'l'
+                    )
+                }
+
+  observeEvent(input$helpRanking,{
+              showModal(rankingDocumentation())
+              
+          })              
+                
   ## ui elements
   observeEvent(input$gotoRankings, 
       updateTabsetPanel(session, "main-tabs", selected = "Rankings"))
@@ -70,10 +84,15 @@ petanqueServer <- function(input, output, session) {
       })
   
   output$rankingsUI <- renderUI({
-        tagList(
+        tagList(  
             h2("Ranking"),
-            DT::dataTableOutput("rankingTable")
-        )
+            DT::dataTableOutput("rankingTable"),
+            tags$br(),
+            tags$br(),
+            actionButton('helpRanking',"The ranking system", icon = icon('question'),style="color: #32a6d3; background-color: white; border-color: white"),
+            tags$br(),
+            tags$br()
+        )  
       })
 
   # FIXME: file is checked every second, is there a better solution?
@@ -98,6 +117,10 @@ petanqueServer <- function(input, output, session) {
   output$message <- renderUI({
         
         if (gameEnded() && animationFinished()) {
+          # update and show ranking
+          updateRanking(players(), winner(), score())
+          # trigger file re-reading
+          refreshRankingsFile(runif(1))
           msg <- tagList("Game finished! ", br(), 
               span(class = paste0("player", winner()), players()[[winner()]]), 
               " has won with ", score(), paste0(" point", if (score() > 1) "s." else "."))
@@ -263,12 +286,13 @@ petanqueServer <- function(input, output, session) {
 
   ## keyboard inputs ('enter' can be also clicked) 
   observeEvent(input$enter, {
+
         if (!gameActive()) {
           ## just started the game
           # ask for player names
           showModal(playerInfoModal())
           # further logic is called only after confirmation of names 
-        } else {
+        } else {  
           ## have chosen a distribution   
           picked <- distrChoices()[[activeDistr()]] 
           chosenDistr(picked)
@@ -278,10 +302,6 @@ petanqueServer <- function(input, output, session) {
           # increase turn
           nextTurn <- turnNumber() + 1
           if (nextTurn > MAX_TURNS) {
-            # update and show ranking
-            updateRanking(players(), winner(), score())
-            # trigger file re-reading
-            refreshRankingsFile(runif(1))
             # end game
             gameEnded(TRUE)
             gameActive(FALSE)
