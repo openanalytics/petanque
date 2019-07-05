@@ -21,8 +21,9 @@ petanqueServer <- function(input, output, session) {
   activePlayer <- reactiveVal(NULL) ## index of active player (1 or 2)
   turnNumber <- reactiveVal(NULL)
   
-  step <- reactiveVal(STEP_MAX)			## animation step (initialized as 'finished')
-
+  animationStep <- reactiveVal(0) ##STEP_MAX)			## animation step (initialized as 'finished')
+  animationFinished <- reactiveVal(TRUE)
+  
   distance <- reactiveVal(NULL)
   
   distrChoices <- reactiveVal(NULL)	## list of lists
@@ -96,7 +97,7 @@ petanqueServer <- function(input, output, session) {
   
   output$message <- renderUI({
         
-        if (gameEnded() && step() == STEP_MAX) {
+        if (gameEnded() && animationFinished()) {
           msg <- tagList("Game finished! ", br(), 
               span(class = paste0("player", winner()), players()[[winner()]]), 
               " has won with ", score(), paste0(" point", if (score() > 1) "s." else "."))
@@ -104,7 +105,7 @@ petanqueServer <- function(input, output, session) {
               "Press", actionLink("enter", "Start"), "to start a new game!")
           playSound("win")
         } else {
-          if (!gameActive() && step() == STEP_MAX) {
+          if (!gameActive() && animationFinished()) {
             msg <- tagList("Press", actionLink("enter", "Start"), "to start a new game!") 
           } else {
             msg <- "Game is in progress!"
@@ -114,9 +115,9 @@ petanqueServer <- function(input, output, session) {
                 "Playing:", 
                 span(sprintf("%s (%s)", players()[[1]], rankings()[[1]]), class = "player1"), "and", 
                 span(sprintf("%s (%s)", players()[[2]], rankings()[[2]]), class = "player2"))
-          if (!is.null(turnNumber()) && step() == STEP_MAX) 
+          if (!is.null(turnNumber()) && animationFinished()) 
             msg <- tagList(msg, br(), "Turn Number:", turnNumber())
-          if (!is.null(activePlayer()) && step() == STEP_MAX) 
+          if (!is.null(activePlayer()) && animationFinished()) 
             msg <- tagList(msg, "Current player:", 
                 span(class = paste0("player", activePlayer()), players()[[activePlayer()]]))
         }
@@ -126,7 +127,7 @@ petanqueServer <- function(input, output, session) {
       })
   
   output$distributuionList <- renderUI({
-        req(nDistr(), step() == STEP_MAX, gameActive())
+        req(nDistr(), animationFinished(), gameActive())
         
         div(class = "distr-list", 
             lapply(seq_len(nDistr()), function(iDistr) {
@@ -167,32 +168,96 @@ petanqueServer <- function(input, output, session) {
             )
         )
         # start animation
-        step(1)
+        animationFinished(FALSE)
+        animationStep(1)
+        collisNo(0)
+        intermediateData(NULL)
       })
 
+  
+  intermediateData <- reactiveVal(NULL)
+  collisNo <- reactiveVal(0)
+  
   ## animation
   observe({
         invalidateLater(DELAY, session)
         isolate({
-              req(step() < STEP_MAX, distance())
-              curStep <- step()
+              req(!animationFinished(), distance())  # animationStep() < STEP_MAX
+              curStep <- animationStep()
+              
+              if (curStep <= 7) {
+                posDFarg <- gameData() # original data
+              } else { 
+                posDFarg <- intermediateData()
+              }
               
               # update (redraw) plot
               svgStr <- svgDevice()
               # FIXME: not ideal passing distribution and params again?..
               posDF <- throwBall(distance = distance(), distribution = chosenDistr()[["type"]],
                   param1 = chosenDistr()[["param1"]], param2 = chosenDistr()[["param2"]],
-                  posDF = gameData(), step = curStep)
+                  posDF = posDFarg, step = curStep) #, collisNo = collisNo())
+              
+              finished <- FALSE
+
+              if (curStep == 7) {
+                doCollisionCheck <- TRUE
+                collided <- FALSE
+                posDF <- detectCollision(posDF) #, collisNo = collisNo)
+                if (any(posDF$travelDist != 0)) { # continue
+                  intermediateData(posDF)  # save returned data with travelDist
+                  collisNo(collisNo() + 1) # inc collision
+                  # call animate via step...
+                } else {
+                  finished <- TRUE
+                }
+              }
+              
+              if (curStep > 7) {
+                if ((curStep-7) %% 5 == 0) {
+                  # finished collision animation
+                  if (collisNo() < 4) {
+                    posDF <- detectCollision(posDF) #, collisNo = collisNo)
+                    if (any(posDF$travelDist != 0)) { # continue
+                      intermediateData(posDF)
+                      collisNo(collisNo() + 1) # inc collision
+                      # call animate via step...
+                    } else {
+                      finished <- TRUE
+                    }
+                  } else {
+                    finished <- TRUE
+                  }
+                } else { # we are in progress with animation
+                  intermediateData(posDF)
+                }
+              }
+
+              if (finished) {
+                # TODO
+                #refreshPlot(posDF)
+                if(turnNumber() < 7) {
+                  drawHuman(color = posDF$color[turnNumber()+1]) #; Sys.sleep(1)
+                }
+                playSound("ball")
+                animationFinished(TRUE)
+                gameData(posDF)
+              } else {
+                animationStep(curStep + 1)
+              }
+              
               dev.off()
               gamePlot(svgStr())
-
-              # update data frame
-              if (curStep == STEP_MAX-2)
-                playSound("hit")
-              if (curStep == STEP_MAX-1)
-                gameData(posDF)
               
-              step(curStep + 1)
+              
+#              # TODO: detect from posDF?
+#              if (curStep == STEP_MAX-2)
+#                # any(posDF$travelDist != 0)
+#                playSound("hit") #ball landed or collision
+#              # TODO: from posDF too...
+#              if (curStep == STEP_MAX-1)
+#                gameData(posDF)
+              
             })
       })
 
