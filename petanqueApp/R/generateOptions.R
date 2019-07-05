@@ -126,7 +126,7 @@ printDistr <- function(distr, inButton = FALSE) {
 				  normal = paste0("mean = ", round(distr$param1, 1), ", sd = ", round(distr$param2, 1)),
 				  uniform = paste0("min = ", round(distr$param1, 1), ", max = ", round(distr$param2, 1)),
 				  poisson = paste0("lambda = ", round(distr$param1, 1)),
-				  bernouilli = paste0("prob = ", round(distr$param1, 1)),
+				  bernoulli = paste0("prob = ", round(distr$param1, 1)),
 				  binomial = paste0("size = ", round(distr$param1, 1), ", prob = ", round(distr$param2, 1)),
 				  geometric = paste0("prob = ", round(distr$param1, 1)),
 				  degenerate = paste0("x = ", round(distr$param1, 1)),
