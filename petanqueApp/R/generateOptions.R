@@ -119,8 +119,19 @@ printOptions <- function(options) {
 	
 }
 
-printDistr <- function(distr) {
-  paste0(distr$type, " (", round(distr$param1, 1), 
-      if (!is.na(distr$param2)) paste0(", ", round(distr$param2, 1)),
-      ")")
+printDistr <- function(distr, inButton = FALSE) {
+  HTML(paste0(distr$type, if (inButton) "</br>", 
+				  "(", 
+		  switch(distr$type,
+				  normal = paste0("mean = ", round(distr$param1, 1), ", sd = ", round(distr$param2, 1)),
+				  uniform = paste0("min = ", round(distr$param1, 1), ", max = ", round(distr$param2, 1)),
+				  poisson = paste0("lambda = ", round(distr$param1, 1)),
+				  bernouilli = paste0("prob = ", round(distr$param1, 1)),
+				  binomial = paste0("size = ", round(distr$param1, 1), ", prob = ", round(distr$param2, 1)),
+				  geometric = paste0("prob = ", round(distr$param1, 1)),
+				  degenerate = paste0("x = ", round(distr$param1, 1)),
+				  chisq = paste0("df = ", round(distr$param1, 1)),
+				  weibull = paste0("shape = ", round(distr$param1, 1), ", scale = ", round(distr$param2, 1))
+				  ),
+		  ")"))
 }

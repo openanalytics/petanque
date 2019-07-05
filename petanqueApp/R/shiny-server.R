@@ -7,7 +7,7 @@ petanqueServer <- function(input, output, session) {
   observeEvent(input$debug_console, browser())
   
   ## config and initialization 
-  MAX_TURNS <- 6
+  MAX_TURNS <- 2
   STEP_MAX <- 8  # animation steps
   DELAY <- 500  # animation step delay in ms 
   
@@ -132,7 +132,7 @@ petanqueServer <- function(input, output, session) {
             lapply(seq_len(nDistr()), function(iDistr) {
                   div(id = paste0("distr", iDistr), 
                       class = paste("distr", if (!is.null(activeDistr()) && iDistr == activeDistr()) "selected"),
-                      printDistr(distrChoices()[[iDistr]])
+                      printDistr(distrChoices()[[iDistr]], inButton = TRUE)
                   )
                 })
         )
@@ -308,7 +308,7 @@ petanqueServer <- function(input, output, session) {
     # use names in the game
     players(playerNames)
     # get their rankings
-    rankings(c(getRanking(playerNames[1])$rating, getRanking(playerNames[2])$rating))
+    rankings(c(getRanking(playerNames[1])$rank, getRanking(playerNames[2])$rank))
     # Set active player
     activePlayer(1)
     # Set turn

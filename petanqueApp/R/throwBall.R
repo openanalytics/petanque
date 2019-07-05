@@ -84,7 +84,7 @@ distanceFromDistribution <- function(distribution, param1, param2) {
   # TODO add distributions
   switch(distribution,
       "normal" = rnorm(1, mean = param1, sd = param2),
-      "uniform" = runif(1, param1, param2),
+      "uniform" = runif(1, min = param1, max = param2),
       "poisson" = rpois(1, lambda = param1),
       "bernoulli" = rbinom(1, 1, prob = param1),
       "binomial" = rbinom(1, size = param1, prob = param2),
