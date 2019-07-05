@@ -128,7 +128,7 @@ petanqueServer <- function(input, output, session) {
               " has won with ", score(), paste0(" point", if (score() > 1) "s." else "."))
           msg <- tagList(msg, actionLink("gotoRankings", "See Rankings."), br(), 
               "Press", actionLink("enter", "Start"), "to start a new game!")
-          playSound("win")
+#          playSound("win")
         } else {
           if (!gameActive() && animationFinished()) {
             msg <- tagList("Press", actionLink("enter", "Start"), "to start a new game!") 
@@ -230,6 +230,7 @@ petanqueServer <- function(input, output, session) {
                 collided <- FALSE
                 posDF <- detectCollision(posDF) #, collisNo = collisNo)
                 if (any(posDF$travelDist != 0)) { # continue
+#                  playSound("hit")
                   intermediateData(posDF)  # save returned data with travelDist
                   collisNo(collisNo() + 1) # inc collision
                   # call animate via step...
@@ -244,6 +245,7 @@ petanqueServer <- function(input, output, session) {
                   if (collisNo() < 4) {
                     posDF <- detectCollision(posDF) #, collisNo = collisNo)
                     if (any(posDF$travelDist != 0)) { # continue
+#                      playSound("hit")
                       intermediateData(posDF)
                       collisNo(collisNo() + 1) # inc collision
                       # call animate via step...
@@ -264,7 +266,7 @@ petanqueServer <- function(input, output, session) {
                 if(turnNumber() < 7) {
                   drawHuman(color = posDF$color[turnNumber()+1]) #; Sys.sleep(1)
                 }
-                playSound("ball")
+#                playSound("ball")
                 animationFinished(TRUE)
                 gameData(posDF)
               } else {
