@@ -308,7 +308,7 @@ petanqueServer <- function(input, output, session) {
     # use names in the game
     players(playerNames)
     # get their rankings
-    rankings(c(getRanking(playerNames[1])$rank, getRanking(playerNames[2])$rank))
+    rankings(c(getRanking(playerNames[1])$rating, getRanking(playerNames[2])$rating))
     # Set active player
     activePlayer(1)
     # Set turn
