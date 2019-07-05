@@ -1,3 +1,4 @@
+#' @export
 drawDistribution <- function(distribution, param1, param2) {
 	
 	if(distribution == "normal")

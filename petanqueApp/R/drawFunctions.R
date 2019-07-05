@@ -1,3 +1,4 @@
+#' @export
 drawField <- function() {
 	blankPlot(xlim = c(-2, 13), ylim = c(-0.5, 1))
 	segments(x0 = 0, y0 = 0, x1 = 10, lwd = 3)
@@ -51,7 +52,7 @@ drawField <- function() {
 	drawFlower(x = 11.5, stemHeight = 0.3, colNum = 2)
 }
 
-
+#' @export
 drawFlower <- function(x, stemHeight, colNum = 2){
 
 	ygrid <- seq(0.01, stemHeight, length.out = 100)
@@ -67,7 +68,7 @@ drawFlower <- function(x, stemHeight, colNum = 2){
 			col = colVec[2], pch = 19, cex = 2)
 }
 
-
+#' @export
 drawHuman <- function(color = "orange") {
 	
 	#rect(xleft = -0.6, xright = -0.01, ybottom = 0, ytop = 0.7, col = "white", border = "white")
@@ -85,6 +86,7 @@ drawHuman <- function(color = "orange") {
 }
 
 ## NB: step = Inf preserves 'usual' animation, otherwise 'shiny' animation is used
+#' @export
 animateThrow <- function(distance, color, step = Inf) {
   if (step >= 1) {
     points(x = 1.2 * distance / 5, y = 0.4, cex = 1, pch = 19, col = color)
@@ -111,7 +113,7 @@ animateThrow <- function(distance, color, step = Inf) {
 	# then wipe it
 	
 }
-
+#' @export
 animateCollision <- function(posDF) {  # startX, distance, color
 	
 	flying <- posDF[which(posDF$thrown & posDF$travelDist != 0), ]
@@ -149,7 +151,7 @@ animateCollision <- function(posDF) {  # startX, distance, color
 	
 }
 
-
+#' @export
 refreshPlot <- function(posDF) {
 	
 	drawField()

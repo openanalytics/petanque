@@ -10,7 +10,7 @@ newGame <- function() {
 	posDF <- data.frame(x = numeric(7), 
 			id = 1:7, 
 			type = c("target", rep(c("p1", "p2"), 3)),
-			width = c(0.2, rep(0.4, 6)), 
+			width = c(0.030, rep(0.075, 6)), 
 			thrown = c(TRUE, rep(FALSE, 6)), 
 			color = c("red", rep(c("orange", "blue"), 3)), 
 			yPos = rep(0.09, 7), 

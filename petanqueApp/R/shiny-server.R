@@ -132,7 +132,7 @@ petanqueServer <- function(input, output, session) {
             lapply(seq_len(nDistr()), function(iDistr) {
                   div(id = paste0("distr", iDistr), 
                       class = paste("distr", if (!is.null(activeDistr()) && iDistr == activeDistr()) "selected"),
-                      printDistr(distrChoices()[[iDistr]])
+                      printDistr(distrChoices()[[iDistr]], inButton = TRUE)
                   )
                 })
         )
