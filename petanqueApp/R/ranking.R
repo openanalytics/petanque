@@ -7,8 +7,6 @@ RANKING_FILE <- "/tmp/petanque-ranking.rds"
 #' @param score Score
 #' @param file Path to the RDS file with saved ranking
 updateRanking <- function(players, winner, score, file = RANKING_FILE) {
-    print(players)
-    print(winner) 
   if (file.exists(file)) {
       rankingDB <- readRDS(file)
   } else {
@@ -103,7 +101,7 @@ updateRanking <- function(players, winner, score, file = RANKING_FILE) {
 #            finalR <- specialRanking(infoPlayer1 = oldRanks[iplayer,], ratingPlayer2 =  intermediateRanking[[2-(iplayer-1)]], score = scoreFinal[iplayer])
 #        }
 #        else{
-            finalR <- standardRanking(infoPlayer1 = oldRanks[iplayer,], ratingPlayer2 =  initialRanking[[2-(iplayer-1)]], score = scoreFinal[iplayer])
+            finalR <- standardRanking(infoPlayer1 = oldRanks[iplayer,], ratingPlayer2 =  intermediateRanking[[2-(iplayer-1)]], score = scoreFinal[iplayer])
 #        }
         
 #        if(finalR<100){
@@ -120,8 +118,8 @@ updateRanking <- function(players, winner, score, file = RANKING_FILE) {
     newRanks <- oldRanks
     newRanks$rating <- unlist(finalRanking)
     newRanks$gamesPlayed <- newRanks$gamesPlayed + 1
-    newRanks$nWins <- newRanks$nWins + floor(score)
-    newRanks$nLosses <- newRanks$nLosses + floor(abs(score-1))
+    newRanks$nWins <- newRanks$nWins + floor(scoreFinal)
+    newRanks$nLosses <- newRanks$nLosses + floor(abs(scoreFinal-1))
     #newRanks$type <- 'ranked'
     
     rankingDB[which(rankingDB$player%in%players),] <- newRanks[,-c(which(colnames(newRanks)=='effectiveGames'))]
@@ -333,7 +331,15 @@ standardRanking <- function(infoPlayer1, ratingPlayer2, score){
     
     We <- 1/(1+10^(-(ratingPlayer1-ratingPlayer2)/400))
     
-    K <- 800/(infoPlayer1$effectiveGames + 1)
+    #K <- 800/(infoPlayer1$effectiveGames + 1)
+    
+    if(ratingPlayer1 < 2100){
+        K <- 32
+    }else if(ratingPlayer1 > 2100 && ratingPlayer1 < 2400){
+        K  <- 24
+    }else{
+        K <- 16
+    }
     
     R_s <- ratingPlayer1 + K*(score - We )
     

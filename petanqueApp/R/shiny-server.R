@@ -37,6 +37,7 @@ petanqueServer <- function(input, output, session) {
         length(distrChoices())
       })
   # we always know the current score
+
   score <- reactive({
         req(gameData())
         determineOutcome(gameData())$pointsWon
@@ -97,6 +98,10 @@ petanqueServer <- function(input, output, session) {
   output$message <- renderUI({
         
         if (gameEnded() && step() == STEP_MAX) {
+          # update and show ranking
+          updateRanking(players(), winner(), score())
+          # trigger file re-reading
+          refreshRankingsFile(runif(1))
           msg <- tagList("Game finished! ", br(), 
               span(class = paste0("player", winner()), players()[[winner()]]), 
               " has won with ", score(), paste0(" point", if (score() > 1) "s." else "."))
@@ -198,12 +203,13 @@ petanqueServer <- function(input, output, session) {
 
   ## keyboard inputs ('enter' can be also clicked) 
   observeEvent(input$enter, {
+
         if (!gameActive()) {
           ## just started the game
           # ask for player names
           showModal(playerInfoModal())
           # further logic is called only after confirmation of names 
-        } else {
+        } else {  
           ## have chosen a distribution   
           picked <- distrChoices()[[activeDistr()]] 
           chosenDistr(picked)
@@ -213,10 +219,6 @@ petanqueServer <- function(input, output, session) {
           # increase turn
           nextTurn <- turnNumber() + 1
           if (nextTurn > MAX_TURNS) {
-            # update and show ranking
-            updateRanking(players(), winner(), score())
-            # trigger file re-reading
-            refreshRankingsFile(runif(1))
             # end game
             gameEnded(TRUE)
             gameActive(FALSE)
