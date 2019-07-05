@@ -179,7 +179,7 @@ animateCollision <- function(posDF) {  # startX, distance, color
 #' @export
 refreshPlot <- function(posDF, newPlot = FALSE) {
 	
-	drawField(newPlot = FALSE)
+	drawField(newPlot = newPlot)
 	draw.circle(x = posDF$x[1], y = posDF$y[1], col = oaColors(posDF$color[1]),  
 			radius = posDF$width[1]/2, nv = 120, border = oaColors(posDF$color[1]))
 	for(jRow in 2:7)
