@@ -70,7 +70,7 @@ detectCollision <- function(posDF, collisNo = 0) {
 	}
 	out <- rbind.data.frame(sitting, flying)
 	
-	idxNotUsed <- setdiff(seq_along(nrow(posDF)), c(idxFlying, idxSitting))
+	idxNotUsed <- setdiff(seq_len(nrow(posDF)), c(idxFlying, idxSitting))
 	posDF <- rbind.data.frame(out, posDF[idxNotUsed, ])
 		
 	posDF <- posDF[order(posDF$id), ]
