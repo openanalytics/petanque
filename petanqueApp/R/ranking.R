@@ -1,6 +1,6 @@
 RANKING_FILE <- "/tmp/petanque-ranking.rds"
-players <- c('Maxim','Marijke')
-winner <- 1
+#players <- c('Maxim','Marijke')
+#winner <- 1
 #' Update ranking based on the result of the game
 #' @param players Player names (character vector of length 2)
 #' @param winner Winning player's number 1 or 2 or 0 (tie)
@@ -14,11 +14,11 @@ updateRanking <- function(players, winner, score, file = RANKING_FILE) {
       rankingDB <- data.frame('rank' = 'new player' ,'player'= players, 'rating' = rep(750,2),  'gamesPlayed' = rep(0,2), 'nWins' = rep(0,2), 'nLosses' = rep(0,2),stringsAsFactors=FALSE) 
       saveRDS(rankingDB, file = file) 
   }
-#  if (length(missingPlayers <- setdiff(players, rankingDB$player))) { # add player(s) that don't have ranking
-#    rankingDB <- rbind(rankingDB, 
-#        data.frame('player' = missingPlayers, 'rank' = 'new player', 'rating' = 750,  'gamesPlayed' = 0, 'nWins' = 0, 'nLosses' = 0, type = 'unranked', stringsAsFactors = FALSE)
-#    )
-#  }
+  if (length(missingPlayers <- setdiff(players, rankingDB$player))) { # add player(s) that don't have ranking
+    rankingDB <- rbind(rankingDB, 
+        data.frame('player' = missingPlayers, 'rank' = 'new player', 'rating' = 750,  'gamesPlayed' = 0, 'nWins' = 0, 'nLosses' = 0, type = 'unranked', stringsAsFactors = FALSE)
+    )
+  }
   
   # step 1) get previous ranking / initialize ranking
   oldRanks <- lapply(players, function(p) getRanking(player = p, rankingDB = rankingDB))
