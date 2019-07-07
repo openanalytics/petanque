@@ -247,14 +247,14 @@ refreshPlot <- function(posDF, newPlot = FALSE) {
 	
 }
 
-redrawBalls <- function(posDF, except) {
+redrawBalls <- function(posDF, except = NULL) {
   
   toClean <- posDF[posDF$thrown, ]
   toDraw <- posDF[posDF$thrown & !(posDF$id %in% except), ]
   
   for (jRow in seq_len(nrow(toClean))) {
     draw.circle(x = toClean$x[jRow], y = toClean$y[jRow], col = "white",  
-        radius = toClean$width[jRow]/2*1.1, nv = 120, border = "white")
+        radius = toClean$width[jRow]/2*1.05, nv = 120, border = "white")
   }
   
   for (jRow in rev(seq_len(nrow(toDraw)))) {

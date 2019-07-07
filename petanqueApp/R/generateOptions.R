@@ -120,7 +120,7 @@ printOptions <- function(options) {
 }
 
 printDistr <- function(distr, inButton = FALSE) {
-  HTML(paste0(distr$type, if (inButton) "</br>", 
+  HTML(paste0(distr$type, if (inButton) "<br>", 
 				  "(", 
 		  switch(distr$type,
 				  normal = paste0("\u03bc = ", round(distr$param1, 1), 

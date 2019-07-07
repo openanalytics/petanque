@@ -5,7 +5,7 @@ determineOutcome <- function(posDF) {
 	
 	# set all the 'off field' balls to set value (15)
 	if(any(tmp$x > 10 | tmp$x < 0))
-		tmp$x[which(tmp$x > 10 | tmp$x < 0)] <- 15
+		tmp$x[which(tmp$x > 10 | tmp$x < 0)] <- 20
 	
 	tmp$x <- abs(tmp$x - posDF$x[1])
 	tmp <- tmp[order(tmp$x), ] # sort by abs diff between ball and target

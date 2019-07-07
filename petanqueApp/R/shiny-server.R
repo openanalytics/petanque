@@ -253,7 +253,7 @@ petanqueServer <- function(input, output, session) {
               if (finished) {
                 # TODO
 #                refreshPlot(posDF, newPlot = FALSE)
-                if (turnNumber() <= MAX_TURNS) {
+                if (turnNumber() <= MAX_TURNS && !gameEnded()) {
                   drawHuman(color = posDF$color[turnNumber()+1]) #; Sys.sleep(1)
                 }
 #                playSound("ball")
