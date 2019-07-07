@@ -49,8 +49,9 @@ petanqueServer <- function(input, output, session) {
         winnerNumber(determineOutcome(gameData())$winner)
       })
 
-  observeEvent(input$helpRanking,{
-              showModal(rankingDocumentation())
+  observeEvent(input$helpRanking, {
+              if (input[["main-tabs"]] == "Rankings")
+                showModal(rankingDocumentation())
           })              
                 
   ## ui elements

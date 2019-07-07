@@ -58,6 +58,9 @@ petanqueUI <- function(debug = FALSE) {
                     case 39: // right
                       Shiny.onInputChange("right", Math.random(1));
                       break;
+										case 72: // h
+                      Shiny.onInputChange("helpRanking", Math.random(1));
+                      break;
                     case 13: // enter
                       Shiny.onInputChange("enter", Math.random(1));
                       break;
@@ -92,7 +95,7 @@ petanqueUI <- function(debug = FALSE) {
       fluidRow(
           column(12, 
               div(class = "controls",  
-                  strong("Controls:"), "Use up/down arrows to choose distribution, 'Enter' or 'Space' to start/select, left/right arrows to switch between", actionLink("linkGame", "Game"), "and", actionLink("linkRankings", "Rankings"))
+                  strong("Controls:"), "Use up/down arrows to choose distribution, 'Enter' or 'Space' to start/select, left/right arrows to switch between", actionLink("linkGame", "Game"), "and", actionLink("linkRankings", "Rankings"), ", 'h' for ranking system help")
           )
       )
   
