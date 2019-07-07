@@ -89,7 +89,7 @@ petanqueServer <- function(input, output, session) {
         )  
       })
 
-  # FIXME: file is checked every second, is there a better solution?
+  ## file is checked each time refreshRankingsFile() is changed
 #  rankingsData <- reactiveFileReader(1000, session, RANKING_FILE, printRankings)
   rankingsData <- reactive({
         refreshRankingsFile() # to re-run this after ratings update
@@ -232,11 +232,11 @@ petanqueServer <- function(input, output, session) {
               if (curStep > 6) {
                 if ((curStep-6) %% 5 == 0) {
                   # finished collision animation
-                  if (collisNo() < 4) {
+                  if (collisNo() < 4) { # limit number of collisions
                     posDF <- detectCollision(posDF) #, collisNo = collisNo)
                     if (any(posDF$travelDist != 0)) { # continue
 #                      playSound("hit")
-                      intermediateData(posDF)
+#                      intermediateData(posDF)
                       collisNo(collisNo() + 1) # inc collision
                       # call animate via step...
                     } else {
@@ -246,7 +246,7 @@ petanqueServer <- function(input, output, session) {
                     finished <- TRUE
                   }
                 } else { # we are in progress with animation
-                  intermediateData(posDF)
+#                  intermediateData(posDF)
                 }
               }
 

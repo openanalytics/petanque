@@ -121,66 +121,112 @@ animateThrow <- function(distance, color, step = Inf) {
 #' @export
 animateCollision <- function(posDF, step = Inf) {  # startX, distance, color
 	
-	flying <- posDF[which(posDF$thrown & posDF$travelDist != 0), ]
-	nFlying <- nrow(flying)
+  posDFstart <- posDF
   
-  animationStep <- if (is.infinite(step)) Inf else (step-7) %% 5+1  # 7->1, ..., 11->5, 12->1, ...
+  # generalized animation loop
+
+  #  animationStep <- if (is.infinite(step)) Inf else (step-7) %% 5+1  # 7->1, ..., 11->5, 12->1, ...
+  animationStep <- if (is.infinite(step)) Inf else step-6 # 7-> 1
+  noCycles <- ((animationStep-1) %/% 5 + 1)
   
-#	for(jAnimation in 1:4) {
-#		for(i in 1:nrow(flying)) {
-  if (animationStep >= 1)
-    points(x = flying$x + 1.2 * flying$travelDist / 5,
-        y = rep(0.4/2, nFlying), cex = 1, pch = 19, col = oaColors(flying$color)) 
-  if (animationStep >= 2)
-    points(x = flying$x + 2.2 * flying$travelDist / 5,
-        y = rep(0.65/2, nFlying), cex = 1, pch = 19, col = oaColors(flying$color)) 
-  if (animationStep >= 3)
-    points(x = flying$x + 3.5 * flying$travelDist / 5,
-        y = rep(0.6/2, nFlying), cex = 1, pch = 19, col = oaColors(flying$color)) 
-  if (animationStep >= 4)
-    points(x = flying$x + 4.3 * flying$travelDist / 5,
-        y = rep(0.4/2, nFlying), cex = 1, pch = 19, col = oaColors(flying$color)) 
-#		}
-#		Sys.sleep(0.5)
-#	}
-	
-  if (animationStep >= 5) {
-    posDF$x <- posDF$x + posDF$travelDist
-    draw.circle(x = posDF$x[1], y = posDF$y[1], col = oaColors(posDF$color[1]),  
-        radius = posDF$width[1]/2, nv = 120, border = oaColors(posDF$color[1]))
-    #points(x = posDF$x[1], y = 0.05, col = oaColors("red"), pch = 19, cex = 1.5)
+  xProp <- c(1.2, 2.2, 3.5, 4.3, 5)/5
+  yPos  <- c(0.2, 0.325, 0.3, 0.2) 
+  
+  curData <- posDF
     
+  for (iCycle in seq_len(noCycles)) {
     
-    # determine y values
-    for(i in 1:nrow(posDF)) {
-      if(i == 1) {
-        if(posDF$x[i] > 10) {
-          posDF$x[i] <- 10
-          draw.circle(x = posDF$x[1], y = posDF$y[1], col = oaColors(posDF$color[1]),  
-              radius = posDF$width[1]/2, nv = 120, border = oaColors(posDF$color[1]))
-        }	
-        if(posDF$x[i] < 0) {
-          posDF$x[i] <- 0
-          draw.circle(x = posDF$x[1], y = posDF$y[1], col = oaColors(posDF$color[1]),  
-              radius = posDF$width[1]/2, nv = 120, border = oaColors(posDF$color[1]))
-        }
-        
-      }
+    flying <- curData[which(curData$thrown & curData$travelDist != 0), ]
+    nFlying <- nrow(flying)
+    
+    stepsInCycle <- if (animationStep >= iCycle*5) 5 else animationStep-5*(iCycle-1) 
+    
+    for (jStep in seq_len(min(4, stepsInCycle))) {
+      # TODO: remove flying balls old positions
       
-      posDF$y[i] <- ifelse(posDF$x[i] > 10 | posDF$x[i] < 0, -0.3, 0.09)
-      posDF$y[1] <- 0.05
+      realStep <- (iCycle-1)*5+jStep
+      # 1-4
+      if (animationStep >= realStep)
+        points(x = flying$x + xProp[jStep] * flying$travelDist,
+            y = rep(yPos[jStep], nFlying), cex = 1, pch = 19, col = oaColors(flying$color)) 
+
     }
     
-    
-    for(jRow in 7:2)
-      if(posDF$thrown[jRow])
-        draw.circle(x = posDF$x[jRow], y = posDF$y[jRow], col = oaColors(posDF$color[jRow]),  
-            radius = posDF$width[jRow]/2, nv = 120, border = oaColors(posDF$color[jRow]))
-    #points(x = posDF$x[jRow], y = posDF$y[jRow], col = oaColors(posDF$color[jRow]), cex = 3, pch = 19)
+    if (stepsInCycle == 5 &&  animationStep >= iCycle*5) {
+      curData$x <- curData$x + curData$travelDist
+
+      # out of bounds check and draw new balls positions
+      curData$x <- ifelse(curData$x > 10 & curData$id == 1, 10, curData$x)
+      curData$x <- ifelse(curData$x < 0 & curData$id == 1, 0, curData$x)
+      curData$y <- ifelse(curData$x > 10 | curData$x < 0, -0.3, 0.09)
+      curData$y[1] <- 0.05
+      
+      thrownData <- curData[curData$thrown, ]
+      for (iRow in rev(seq_len(nrow(thrownData))))
+        draw.circle(x = thrownData$x[iRow], y = thrownData$y[iRow], col = oaColors(thrownData$color[iRow]),  
+            radius = thrownData$width[iRow]/2, nv = 120, border = oaColors(thrownData$color[iRow]))
+
+    }
     
   }
+
+  curData
   
-  return(posDF)
+##	for(jAnimation in 1:4) {
+##		for(i in 1:nrow(flying)) {
+#  if (animationStep >= 1)
+#    points(x = flying$x + 1.2 * flying$travelDist / 5,
+#        y = rep(0.4/2, nFlying), cex = 1, pch = 19, col = oaColors(flying$color)) 
+#  if (animationStep >= 2)
+#    points(x = flying$x + 2.2 * flying$travelDist / 5,
+#        y = rep(0.65/2, nFlying), cex = 1, pch = 19, col = oaColors(flying$color)) 
+#  if (animationStep >= 3)
+#    points(x = flying$x + 3.5 * flying$travelDist / 5,
+#        y = rep(0.6/2, nFlying), cex = 1, pch = 19, col = oaColors(flying$color)) 
+#  if (animationStep >= 4)
+#    points(x = flying$x + 4.3 * flying$travelDist / 5,
+#        y = rep(0.4/2, nFlying), cex = 1, pch = 19, col = oaColors(flying$color)) 
+##		}
+##		Sys.sleep(0.5)
+##	}
+#	
+#  if (animationStep >= 5) {
+#    posDF$x <- posDF$x + posDF$travelDist
+#    draw.circle(x = posDF$x[1], y = posDF$y[1], col = oaColors(posDF$color[1]),  
+#        radius = posDF$width[1]/2, nv = 120, border = oaColors(posDF$color[1]))
+#    #points(x = posDF$x[1], y = 0.05, col = oaColors("red"), pch = 19, cex = 1.5)
+#    
+#    
+#    # determine y values
+#    for(i in 1:nrow(posDF)) {
+#      if(i == 1) {
+#        if(posDF$x[i] > 10) {
+#          posDF$x[i] <- 10
+#          draw.circle(x = posDF$x[1], y = posDF$y[1], col = oaColors(posDF$color[1]),  
+#              radius = posDF$width[1]/2, nv = 120, border = oaColors(posDF$color[1]))
+#        }	
+#        if(posDF$x[i] < 0) {
+#          posDF$x[i] <- 0
+#          draw.circle(x = posDF$x[1], y = posDF$y[1], col = oaColors(posDF$color[1]),  
+#              radius = posDF$width[1]/2, nv = 120, border = oaColors(posDF$color[1]))
+#        }
+#        
+#      }
+#      
+#      posDF$y[i] <- ifelse(posDF$x[i] > 10 | posDF$x[i] < 0, -0.3, 0.09)
+#      posDF$y[1] <- 0.05
+#    }
+#    
+#    
+#    for(jRow in 7:2)
+#      if(posDF$thrown[jRow])
+#        draw.circle(x = posDF$x[jRow], y = posDF$y[jRow], col = oaColors(posDF$color[jRow]),  
+#            radius = posDF$width[jRow]/2, nv = 120, border = oaColors(posDF$color[jRow]))
+#    #points(x = posDF$x[jRow], y = posDF$y[jRow], col = oaColors(posDF$color[jRow]), cex = 3, pch = 19)
+#    
+#  }
+#  
+#  return(posDF)
 	
 }
 
@@ -196,4 +242,14 @@ refreshPlot <- function(posDF, newPlot = FALSE) {
 					radius = posDF$width[jRow]/2, nv = 120, border = oaColors(posDF$color[jRow]))
 	drawHuman(color = "none"); #Sys.sleep(0.3)
 	
+}
+
+# TODO
+refreshBalls <- function(posDF, posDFnew) {
+  draw.circle(x = posDF$x[1], y = posDF$y[1], col = oaColors(posDF$color[1]),  
+      radius = posDF$width[1]/2, nv = 120, border = oaColors(posDF$color[1]))
+  for(jRow in 2:7)
+    if(posDF$thrown[jRow])
+      draw.circle(x = posDF$x[jRow], y = posDF$y[jRow], col = oaColors(posDF$color[jRow]),  
+          radius = posDF$width[jRow]/2, nv = 120, border = oaColors(posDF$color[jRow]))
 }
