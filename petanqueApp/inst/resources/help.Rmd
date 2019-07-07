@@ -1,19 +1,19 @@
 ---
 title: "The rating system"
-output: html_document
+output: html_fragment
 ---
 
 The rating system is an elo rating system.  
 This is a method in which a player's rating is calculated based on his previous
 experience.  
 
-### **New players**
+#### **New players**
 
 New players are given a rating of 750.  
 Consequently, new players are not at the bottom of the ranking although they are
 not ranked too high either!
     
-### **Update the rating**
+#### **Update the rating**
 
  A player's rank is updated taking into account the rank of the opponent.  For
 example, a highly ranked player plays against a lowly ranked player. 

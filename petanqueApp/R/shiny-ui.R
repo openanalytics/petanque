@@ -130,3 +130,15 @@ playerInfoModal <- function(failed1 = FALSE, failed2 = FALSE, failedBoth = FALSE
       easyClose = TRUE)
 }
 
+rankingDocumentation <- function() {
+  modalDialog(title = "The rating system",
+      withMathJax(
+          includeHTML(system.file("resources", "help.html", package = "petanqueApp"))
+      ),
+      easyClose = TRUE,
+      size = 'l'
+  )
+}
+
+
+

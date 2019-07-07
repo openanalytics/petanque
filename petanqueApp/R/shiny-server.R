@@ -49,17 +49,8 @@ petanqueServer <- function(input, output, session) {
         winnerNumber(determineOutcome(gameData())$winner)
       })
 
-  rankingDocumentation <- function(){
-            modalDialog(
-                        includeHTML(system.file("resources", "help.html", package = "petanqueApp")),
-                        easyClose = TRUE,
-                        size = 'l'
-                    )
-                }
-
   observeEvent(input$helpRanking,{
               showModal(rankingDocumentation())
-              
           })              
                 
   ## ui elements
