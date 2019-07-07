@@ -140,10 +140,11 @@ animateCollision <- function(posDF, step = Inf) {  # startX, distance, color
     nFlying <- nrow(flying)
     
     stepsInCycle <- if (animationStep >= iCycle*5) 5 else animationStep-5*(iCycle-1) 
+
+    # remove flying balls old positions
+    redrawBalls(curData, except = flying$id)
     
     for (jStep in seq_len(min(4, stepsInCycle))) {
-      # TODO: remove flying balls old positions
-      
       realStep <- (iCycle-1)*5+jStep
       # 1-4
       if (animationStep >= realStep)
@@ -166,6 +167,8 @@ animateCollision <- function(posDF, step = Inf) {  # startX, distance, color
         draw.circle(x = thrownData$x[iRow], y = thrownData$y[iRow], col = oaColors(thrownData$color[iRow]),  
             radius = thrownData$width[iRow]/2, nv = 120, border = oaColors(thrownData$color[iRow]))
 
+      curData <- detectCollision(curData)
+      
     }
     
   }
@@ -244,12 +247,20 @@ refreshPlot <- function(posDF, newPlot = FALSE) {
 	
 }
 
-# TODO
-refreshBalls <- function(posDF, posDFnew) {
-  draw.circle(x = posDF$x[1], y = posDF$y[1], col = oaColors(posDF$color[1]),  
-      radius = posDF$width[1]/2, nv = 120, border = oaColors(posDF$color[1]))
-  for(jRow in 2:7)
-    if(posDF$thrown[jRow])
-      draw.circle(x = posDF$x[jRow], y = posDF$y[jRow], col = oaColors(posDF$color[jRow]),  
-          radius = posDF$width[jRow]/2, nv = 120, border = oaColors(posDF$color[jRow]))
+redrawBalls <- function(posDF, except) {
+  
+  toClean <- posDF[posDF$thrown, ]
+  toDraw <- posDF[posDF$thrown & !(posDF$id %in% except), ]
+  
+  for (jRow in seq_len(nrow(toClean))) {
+    draw.circle(x = toClean$x[jRow], y = toClean$y[jRow], col = "white",  
+        radius = toClean$width[jRow]/2*1.1, nv = 120, border = "white")
+  }
+  
+  for (jRow in rev(seq_len(nrow(toDraw)))) {
+    draw.circle(x = toDraw$x[jRow], y = toDraw$y[jRow], col = oaColors(toDraw$color[jRow]),  
+        radius = toDraw$width[jRow]/2, nv = 120, border = oaColors(toDraw$color[jRow]))
+  }
+
 }
+
