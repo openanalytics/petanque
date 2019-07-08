@@ -1,7 +1,7 @@
 #' @export
 drawField <- function(newPlot = FALSE) {
 	if(newPlot) {
-		blankPlot(xlim = c(-2, 13), ylim = c(-0.5, 1))
+		blankPlot(xlim = c(-2.05, 13), ylim = c(-0.5, 1.16))
 	} else {
 		rect(xleft = -4, xright = 15, ybottom = -1, ytop = 2, col = "white", border = "white")
 	}
@@ -19,7 +19,7 @@ drawField <- function(newPlot = FALSE) {
 	trunkOuter <- brewer.pal(11, "BrBG")[id-1]
 	polygon(x = c(tCenter + tWidth, tCenter + tWidth, tCenter + 1.5 *tWidth,
 					tCenter - 1.5 *tWidth, tCenter - tWidth, tCenter - tWidth,
-					tCenter + tWidth), y = c(1.5, 0.2, 0.01, 0.01, 0.2, 1.5, 1.5), 
+					tCenter + tWidth), y = c(1.1, 0.2, 0.01, 0.01, 0.2, 1.1, 1.1), 
 			col = trunkInner, border = trunkOuter, lwd = 3)
 	pal <- brewer.pal(8, "Greens")
 	draw.circle(x = 12, y = 0.9, radius = 0.95, nv = 60, border = pal[8], col = pal[6])
