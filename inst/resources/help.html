@@ -1,0 +1,57 @@
+
+
+
+<p>The rating system is an Elo rating system.<br />
+This is a method in which a player’s rating is calculated based on his previous experience.</p>
+<div id="new-players" class="section level4">
+<h4><strong>New players</strong></h4>
+<p>New players are given a rating of 750.<br />
+Consequently, new players are not at the bottom of the ranking although they are not ranked too high either!</p>
+</div>
+<div id="update-the-rating" class="section level4">
+<h4><strong>Update the rating</strong></h4>
+<p>A player’s rank is updated taking into account the rank of the opponent. For example, a highly ranked player plays against a lowly ranked player.</p>
+<ul>
+<li>If the highly ranked player wins: his rating is increased by a small amount</li>
+<li>If the lowly ranked player wins: his rating is increased by a huge amount</li>
+</ul>
+<p>The updating of the rating consists of the following steps:</p>
+<div id="step-1" class="section level5">
+<h5><strong>Step 1</strong></h5>
+<p>Assume a player has rating <span class="math inline">\(R\)</span> and the opponent has rating <span class="math inline">\(R_i\)</span>.<br />
+Calculate the expected score of the player as:</p>
+<p><span class="math display">\[ E_{R} =  \frac{1}{1+10^{-(R-R_i)/400}} \]</span></p>
+</div>
+<div id="step-2" class="section level5">
+<h5><strong>Step 2</strong></h5>
+<p>The rank of the player is updated based on parameters <em>K</em> and <em>S</em>.</p>
+<p>The parameter <em>K</em> is factor that determines how much the ratings will change:</p>
+<p><span class="math display">\[
+K = \left\{ 
+\begin{array}{l}     
+        32 \quad \text{if $R &lt; 2100$}\\     
+        24 \quad \text{if $2100 &lt; R &lt;2400$}\\     
+        16 \quad \text{if $R &gt; 2400$}\\  
+\end{array} 
+\right.
+\]</span></p>
+<p>The parameter <span class="math inline">\(S\)</span> represents the score, taking into account the result of the petanque game:</p>
+<p><span class="math display">\[
+ S = \left\{  
+ \begin{array}{l}     
+    0 \quad \text{for a loss}\\     
+    1 \quad \text{for a win}+\left\{  
+\begin{array}{l}          0.0 \quad \text{if petanque score = 1}\\         
+                          0.3 \quad \text{if petanque score = 2}\\
+                          0.6 \quad \text{if petanque score = 3}\\ 
+                          \end{array}
+\right. 
+\end{array} 
+\right. 
+\]</span></p>
+<p>The rating of the player is updated by:</p>
+<p><span class="math display">\[R^{&#39;} = R + K \cdot (S - E_{R})\]</span></p>
+<p>Game on!</p>
+</div>
+</div>
+

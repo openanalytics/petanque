@@ -1,0 +1,23 @@
+Package: petanque
+Title: Petanque Shiny Application 
+Version: 1.0.0
+Authors@R: c(
+    person("Maxim", "Nazarov", role = c("aut", "cre"),
+           email = "maxim.nazarov@openanalytics.eu"),
+    person("Jason", "Waddell", role = c("aut"),
+           email = "jason.waddell@openanalytics.eu"),
+    person("Laure", "Cougnaud", role = c("aut"),
+           email = "laure.cougnaud@openanalytics.eu"),
+    person("Vahid", "Nassiri", role = c("aut"),
+           email = "vahid.nassiri@openanalytics.eu"),
+    person("Marijke", "Van Moerbeke", role = c("aut"),
+           email = "marijke.vanmoerbeke@openanalytics.eu"),
+    person("Machteld", "Varewyck", role = c("aut"),
+           email = "machteld.varewyck@openanalytics.eu")     
+    )
+Description: Petanque Game for useR!2019.
+Imports: shiny, DT (>= 0.5), oaPlots, plotrix, RColorBrewer, oaColors, beepr, svglite
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 6.1.1

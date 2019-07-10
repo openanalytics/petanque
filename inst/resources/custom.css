@@ -1,0 +1,143 @@
+.rhandsontable {
+	margin: 5px 0;
+}
+
+/* Use custom fonts */
+
+@import url('https://fonts.googleapis.com/css?family=Cantarell|Roboto');
+
+body {
+	font-family: 'Cantarell', sans-serif;
+	font-size: 16pt;
+}
+h1, h2, h3, h4 {
+	font-family: 'Roboto', sans-serif;
+	font-weight: bold;
+}
+
+/* formatting for the title panel */
+span.version {
+  float: right; 
+  font-family: Cantarell;
+  font-size: small; 
+  text-align: right; 
+  font-weight: normal; 
+  margin: 20px  
+}
+
+.warn {
+  color: red;	
+}
+
+a {
+	color: #32a6d3;
+	text-decoration: none;
+}
+
+/* Show a message when session is disconnected */
+div#shiny-disconnected-overlay {
+  opacity: 0.75;
+}
+div#shiny-disconnected-overlay:before {
+  content: "An error occured or your session has been disconnected. Please refresh your browser window.";
+  text-align: center;
+  font-size: 25pt;
+  background-color: white;
+  padding: 5%; 
+  width: 100%;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+div.logo-div h1 {
+	text-align: center;
+  font-size: 200%;
+  padding-top: 30px;
+}
+div.logo-div h3 {
+	font-style: italic;
+  text-align: center;
+}
+
+img.logo {
+  position: absolute; 
+  right: 0;
+  height: 80px; 
+  margin: 10px 20px;
+  padding-right: 50px;
+}
+
+img.logo2 {
+  position: absolute; 
+  left: 0;
+  height: 100px; 
+  margin: 0 20px;
+  padding-left: 50px;
+}
+
+div.distr-list {
+	font-size: 24px;
+/*	border: 4px solid red; */
+	padding: 10px;
+/* 	width: 400px; */
+	text-align: center;
+}
+
+div.distr {
+  display: inline-block;  
+  font-size: 24px;
+  color: black;
+  padding: 16px;
+  margin: 8px;
+  border: 2px solid #e6e6e6;
+  border-radius: 4px;
+  text-align: center;
+  min-width: 300px;
+}
+
+div.selected {
+	color: #32a6d3;
+	background-color: #f6f6f6;
+  border: 2px solid #32a6d3;
+  border-radius: 4px;
+}
+
+.player1 {
+  color: #FF9400;	
+}
+
+.player2 {
+	color: #0000FF;
+}
+
+/* we do not show tabs */
+ul#main-tabs {
+	visibility: hidden;
+	display: none;
+}
+
+div.message {
+	min-height: 120px;
+	text-align: center;
+	padding: 30px;
+}
+
+div.rankings {
+	max-width: 50%;
+	margin: 0 auto;
+}
+
+.controls {
+	text-align: center;
+}
+div.helpRanking-container {
+  text-align: center;
+  padding: 30px;
+}
+div.helpRanking-container button {
+	color: #32a6d3;
+	font-size: large; 
+	background-color: white; 
+	border-color: white;
+}
