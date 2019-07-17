@@ -97,7 +97,7 @@ petanqueUI <- function(debug = FALSE) {
       
       # title panel
       oaTitlePanel(appName = "\u2119\u00e9tanque \u2119aram\u00e9trique", 
-          subtitle = "a shiny app", 
+          subtitle = span("a shiny app,", icon("github"), tags$a("openanalytics/petanque", href = "https://github.com/openanalytics/petanque")), 
           pkgName = "petanque",
           logo = system.file("resources", "logo_text.png", package = "petanque"),
           logo2 = system.file("resources", "useR2019.png", package = "petanque"),

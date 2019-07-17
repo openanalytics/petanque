@@ -4,10 +4,10 @@
 #' @return Achieved distance, in m
 #' @author Laure Cougnaud, Maxim Nazarov
 getDistanceFromSpeed <- function(v0, a = 10){
-	# vEnd = vInit + 2 * a * d
-	# vEnd = 0
-	d <- (v0^2)/(2*abs(a))
-	return(d) 
+  # vEnd = vInit + 2 * a * d
+  # vEnd = 0
+  d <- (v0^2)/(2*abs(a))
+  return(d) 
 }
 
 
@@ -19,10 +19,10 @@ getDistanceFromSpeed <- function(v0, a = 10){
 #' @param theta Launching angle, 45 by default
 #' @return Speed in m/s
 #' @author Laure Cougnaud
-getSpeedFromDistance <- function(d, theta = pi/4){
-	g <- 9.81 # gravitation constant (m/s^2)
-	v0 <- sqrt((g*abs(d))/sin(2*theta))
-	return(v0)
+getSpeedFromDistance <- function(d, theta = pi / 4){
+  g <- 9.81 # gravitation constant (m/s^2)
+  v0 <- sqrt( (g * abs(d)) / sin(2 * theta) )
+  return(v0)
 }
 
 #' Get Kinetic Energy
@@ -31,7 +31,7 @@ getSpeedFromDistance <- function(d, theta = pi/4){
 #' @return Kinetic Energy in Joules
 #' @author Laure Cougnaud
 getKE <- function(m, v){
-	return(1/2 * m * v^2)
+  return(1/2 * m * v^2)
 }
 
 #' Get velocity from Kinetic Energy and Mass
@@ -40,7 +40,7 @@ getKE <- function(m, v){
 #' @return Object velocity, in m/s
 #' @author Laure Cougnaud
 getVFromKE <- function(KE, m){
-	return(sqrt((2*KE)/m))
+  return(sqrt((2*KE)/m))
 }
 
 #' Get Mass of a ball
@@ -48,9 +48,9 @@ getVFromKE <- function(KE, m){
 #' @return Mass of the target in grams
 #' @author Laure Cougnaud
 getMass <- function(type){
-	# normal ball: between 680 et 710 grams
-	# target ball: between 10 and 18 grams
-	ifelse(type == "target", 0.015, 0.680)
+  # normal ball: between 680 et 710 grams
+  # target ball: between 10 and 18 grams
+  ifelse(type == "target", 0.015, 0.680)
 }
-	
+
 
