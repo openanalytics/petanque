@@ -1,4 +1,4 @@
-RANKING_FILE <- tempfile("ranking", fileext = ".rds")  # "/var/tmp/petanque-ranking.rds"
+RANKING_FILE <- "/var/tmp/petanque-ranking.rds"
 
 #' Update ranking based on the result of the game
 #' @param players Player names (character vector of length 2)
